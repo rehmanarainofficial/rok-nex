@@ -54,6 +54,21 @@ export type Product = {
   updatedAt: Date;
 };
 
+export type Inquiry = {
+  id: string;
+  name: string;
+  companyName?: string;
+  phone: string;
+  email?: string;
+  productInterest?: string;
+  message: string;
+  source: "contact-page" | "product-page";
+  productSlug?: string;
+  status: "new" | "read" | "archived";
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type ProductSummary = Pick<
   Product,
   | "slug"
