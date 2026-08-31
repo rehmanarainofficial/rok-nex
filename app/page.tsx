@@ -1,4 +1,5 @@
 import { ArrowRight, Database, Mail, PackageCheck, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 
 import { DivisionShowcase } from "@/components/home/division-showcase";
 import { HeroSection } from "@/components/home/hero-section";
@@ -12,19 +13,50 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { VALUE_POINTS } from "@/constants/homepage-content";
 import { getCategories } from "@/services/categories";
-import { getProducts } from "@/services/products";
+import { getProductSummaries } from "@/services/products";
+import { defaultSiteSettings, getPublicSiteSettings } from "@/services/site-settings";
+import { absoluteUrl } from "@/utilities/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  const title = settings.homepageSeoTitle || defaultSiteSettings.homepageSeoTitle;
+  const description =
+    settings.homepageSeoDescription || defaultSiteSettings.homepageSeoDescription;
+  const images = settings.defaultSeoImage ? [absoluteUrl(settings.defaultSeoImage)] : undefined;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "/",
+      images,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images,
+    },
+  };
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
-  let products: Awaited<ReturnType<typeof getProducts>> = [];
+  let products: Awaited<ReturnType<typeof getProductSummaries>> = [];
   let catalogError: string | null = null;
 
   try {
     [categories, products] = await Promise.all([
       getCategories({ active: true }),
-      getProducts({ active: true, featured: true, limit: 8 }),
+      getProductSummaries({ active: true, featured: true, limit: 8 }),
     ]);
   } catch (caught) {
     catalogError =

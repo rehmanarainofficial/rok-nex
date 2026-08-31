@@ -64,7 +64,31 @@ export type Inquiry = {
   message: string;
   source: "contact-page" | "product-page";
   productSlug?: string;
-  status: "new" | "read" | "archived";
+  status: "new" | "contacted" | "closed";
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type InquiryStatus = Inquiry["status"];
+
+export type SiteSettings = {
+  id: string;
+  businessName: string;
+  logoText: string;
+  favicon: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  businessHours: string;
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  youtube: string;
+  footerText: string;
+  homepageSeoTitle: string;
+  homepageSeoDescription: string;
+  defaultSeoImage: string;
   createdAt: Date;
   updatedAt: Date;
 };

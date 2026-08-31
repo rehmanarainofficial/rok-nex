@@ -3,16 +3,16 @@
 import { Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import {
-  FormEvent,
   useCallback,
   useEffect,
   useId,
-  useMemo,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 
 import { BrandMark } from "@/components/layout/brand-mark";
+import { GlobalSearch } from "@/components/search/global-search";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { Container } from "@/components/ui/container";
 import { useHeaderScrolled } from "@/hooks/use-scroll-state";
@@ -24,8 +24,8 @@ const navigation = [
   { label: "Rox Fitness", href: "/rox-fitness" },
   { label: "Nex Games", href: "/nex-games" },
   { label: "Products", href: "/products" },
-  { label: "About", href: "/#about" },
-  { label: "Contact", href: "/#contact" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export type HeaderCategoryLink = {
@@ -40,45 +40,17 @@ type SiteHeaderProps = {
 
 const emptyCategories: HeaderCategoryLink[] = [];
 
-function getDivisionPath(division: BrandDivision) {
-  return division === "rox-fitness" ? "/rox-fitness" : "/nex-games";
-}
-
 export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
   const scrolled = useHeaderScrolled();
-  const searchInputId = useId();
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const menuId = useId();
+  const searchDialogId = useId();
+  const searchTitleId = useId();
+  const searchPanelRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const filteredTargets = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const searchTargets = [
-      ...navigation.slice(1),
-      { label: "Wholesale Sports Collection", href: "/" },
-      ...categories.map((category) => ({
-        label: category.name,
-        href: `${getDivisionPath(category.brandDivision)}?category=${category.slug}`,
-      })),
-    ];
-
-    if (!normalizedQuery) {
-      return searchTargets.slice(0, 5);
-    }
-
-    return searchTargets.filter((item) =>
-      item.label.toLowerCase().includes(normalizedQuery),
-    );
-  }, [categories, query]);
 
   useEffect(() => {
-    if (isSearchOpen) {
-      searchInputRef.current?.focus();
-    }
-  }, [isSearchOpen]);
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
       if (event.key === "Escape") {
         setIsSearchOpen(false);
         setIsMenuOpen(false);
@@ -95,21 +67,35 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
     setIsSearchOpen(false);
   }, []);
 
-  const handleSearchSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+  const handleSearchKeyDown = useCallback((event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") {
+      return;
+    }
+
+    const panel = searchPanelRef.current;
+    const focusableElements = panel
+      ? Array.from(
+          panel.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((element) => element.offsetParent !== null)
+      : [];
+
+    if (!focusableElements.length) {
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstElement) {
       event.preventDefault();
-
-      const target = filteredTargets[0];
-
-      if (!target) {
-        return;
-      }
-
-      closePanels();
-      window.location.assign(target.href);
-    },
-    [closePanels, filteredTargets],
-  );
+      lastElement?.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement?.focus();
+    }
+  }, []);
 
   return (
     <header
@@ -140,8 +126,9 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
         </nav>
         <div className="flex items-center gap-2">
           <button
+            aria-controls={searchDialogId}
             aria-expanded={isSearchOpen}
-            aria-label="Open site search"
+            aria-label={isSearchOpen ? "Close site search" : "Open site search"}
             className="grid size-10 place-items-center rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-[var(--shadow-soft)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
             onClick={() => setIsSearchOpen((value) => !value)}
             type="button"
@@ -150,6 +137,7 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
           </button>
           <ThemeSwitcher />
           <button
+            aria-controls={menuId}
             aria-expanded={isMenuOpen}
             aria-label="Toggle navigation menu"
             className="grid size-10 place-items-center rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-[var(--shadow-soft)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] lg:hidden"
@@ -165,47 +153,41 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
         </div>
 
         {isSearchOpen ? (
-          <div className="absolute left-5 right-5 top-[calc(100%+0.75rem)] rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-solid)] p-4 shadow-[var(--shadow-popover)] backdrop-blur-xl sm:left-auto sm:w-[25rem]">
-            <form className="space-y-3" onSubmit={handleSearchSubmit}>
-              <label
-                className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-muted)]"
-                htmlFor={searchInputId}
+          <div
+            aria-labelledby={searchTitleId}
+            aria-modal="true"
+            className="absolute left-5 right-5 top-[calc(100%+0.75rem)] max-h-[min(72vh,38rem)] overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-solid)] p-4 shadow-[var(--shadow-popover)] backdrop-blur-xl sm:left-auto sm:w-[30rem]"
+            id={searchDialogId}
+            onKeyDown={handleSearchKeyDown}
+            ref={searchPanelRef}
+            role="dialog"
+          >
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <h2
+                className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-accent)]"
+                id={searchTitleId}
               >
-                Search sections
-              </label>
-              <input
-                id={searchInputId}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Products, games, fitness..."
-                ref={searchInputRef}
-                type="search"
-                value={query}
-              />
-            </form>
-            <div className="mt-3 grid gap-1">
-              {filteredTargets.length > 0 ? (
-                filteredTargets.map((item) => (
-                  <Link
-                    className="rounded-[var(--radius-sm)] px-3 py-2 text-sm font-semibold text-[var(--color-muted)] transition hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-                    href={item.href}
-                    key={`${item.label}-${item.href}`}
-                    onClick={closePanels}
-                  >
-                    {item.label}
-                  </Link>
-                ))
-              ) : (
-                <p className="px-3 py-2 text-sm text-[var(--color-muted)]">
-                  No matching section found.
-                </p>
-              )}
+                Product Search
+              </h2>
+              <button
+                aria-label="Close site search"
+                className="grid size-9 place-items-center rounded-[var(--radius-pill)] text-[var(--color-muted)] transition hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                onClick={() => setIsSearchOpen(false)}
+                type="button"
+              >
+                <X aria-hidden="true" size={17} />
+              </button>
             </div>
+            <GlobalSearch categories={categories} onNavigate={closePanels} />
           </div>
         ) : null}
       </Container>
 
       {isMenuOpen ? (
-        <div className="border-t border-[var(--color-border)] bg-[var(--color-card-solid)] lg:hidden">
+        <div
+          className="border-t border-[var(--color-border)] bg-[var(--color-card-solid)] lg:hidden"
+          id={menuId}
+        >
           <Container className="grid gap-1 py-3">
             {navigation.map((item) => (
               <Link

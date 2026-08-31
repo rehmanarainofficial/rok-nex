@@ -63,6 +63,29 @@ export async function getCategoryById(id: string) {
   return category ? serializeCategory(category) : null;
 }
 
+export async function getCategoryBySlug(slug: string) {
+  await connectToDatabase();
+
+  const category = await CategoryModel.findOne({ slug: slug.toLowerCase(), active: true })
+    .lean<CategoryDocumentWithId | null>()
+    .exec();
+
+  return category ? serializeCategory(category) : null;
+}
+
+export async function getSitemapCategories(limit = 5000) {
+  await connectToDatabase();
+
+  return CategoryModel.find(
+    { active: true },
+    { slug: 1, updatedAt: 1 },
+  )
+    .sort({ sortOrder: 1, name: 1 })
+    .limit(limit)
+    .lean<Array<Pick<CategoryDocumentWithId, "slug" | "updatedAt">>>()
+    .exec();
+}
+
 export async function createCategory(input: unknown) {
   const validation = validateCategoryInput(input);
 

@@ -277,7 +277,7 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
             <Upload aria-hidden="true" size={16} />
             Upload images
             <input
-              accept="image/jpeg,image/png,image/webp,image/svg+xml"
+              accept="image/jpeg,image/png,image/webp"
               className="sr-only"
               multiple
               name="productImages"

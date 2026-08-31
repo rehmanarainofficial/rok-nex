@@ -23,10 +23,10 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ categories });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unable to load categories.";
-
-    return NextResponse.json({ error: message }, { status: 503 });
+  } catch {
+    return NextResponse.json(
+      { error: "Category catalog is temporarily unavailable." },
+      { status: 503 },
+    );
   }
 }

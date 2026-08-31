@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { formatWholesalePrice } from "@/utilities/formatters";
 import type { ProductSummary } from "@/types/product";
@@ -26,14 +27,14 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     : formatWholesalePrice(product.salePrice ?? product.regularPrice);
 
   return (
-    <article className="group overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-card-hover)]">
+    <article className="depth-card group relative overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-card-hover)]">
       <div className="relative aspect-[1.12/1] overflow-hidden bg-[var(--color-surface-raised)]">
         <Image
           alt={product.name}
           className="object-cover transition duration-500 group-hover:scale-105"
           fill
           priority={priority}
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+          sizes="(max-width: 768px) calc(100vw - 40px), (max-width: 1280px) calc((100vw - 72px) / 2), 18rem"
           src={product.thumbnail}
         />
         {product.badge ? (
@@ -72,17 +73,14 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             Qty {product.stockQuantity}
           </p>
         </div>
-        <details className="group/details border-t border-[var(--color-border)] pt-4">
-          <summary className="cursor-pointer list-none text-sm font-bold text-[var(--color-text)] transition hover:text-[var(--color-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-accent)]">
+        <div className="border-t border-[var(--color-border)] pt-4">
+          <Link
+            className="text-sm font-bold text-[var(--color-text)] transition hover:text-[var(--color-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-accent)]"
+            href={`/products/${product.slug}`}
+          >
             View Details
-          </summary>
-          <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">
-            Division:{" "}
-            {product.brandDivision === "rox-fitness" ? "Rox Fitness" : "Nex Games"}.
-            Contact Rox & Nex for current wholesale tiers, carton quantities, and
-            updated availability.
-          </p>
-        </details>
+          </Link>
+        </div>
       </div>
     </article>
   );

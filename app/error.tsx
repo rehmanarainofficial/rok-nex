@@ -2,10 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-export default function Error({
-  error,
-  reset,
-}: {
+export default function Error({ reset }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
@@ -19,7 +16,7 @@ export default function Error({
           Something went wrong.
         </h1>
         <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">
-          {error.message || "The page could not be loaded safely."}
+          The page could not be loaded safely.
         </p>
         <Button className="mt-6" onClick={reset}>
           Try again

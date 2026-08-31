@@ -17,6 +17,21 @@ export const metadata: Metadata = {
   title: "Rox Fitness",
   description:
     "Browse Rox Fitness wholesale products for strength, movement, performance, and everyday training.",
+  alternates: {
+    canonical: "/rox-fitness",
+  },
+  openGraph: {
+    title: "Rox Fitness",
+    description:
+      "Wholesale fitness products for strength, movement, performance, and everyday training.",
+    url: "/rox-fitness",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rox Fitness",
+    description: "Browse Rox Fitness wholesale strength and training products.",
+  },
 };
 
 export const dynamic = "force-dynamic";

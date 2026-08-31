@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/utilities/cn";
+import { getCategoryPath } from "@/utilities/seo";
 import type { Category } from "@/types/product";
 
 type CategoryCardProps = {
@@ -16,10 +17,6 @@ const accentClasses: Record<CategoryAccent, string> = {
   dark: "from-[rgba(21,19,18,0.18)] dark:from-[rgba(255,255,255,0.09)]",
   light: "from-[rgba(247,242,236,0.5)] dark:from-[rgba(247,242,236,0.08)]",
 };
-
-function getDivisionPath(division: Category["brandDivision"]) {
-  return division === "rox-fitness" ? "/rox-fitness" : "/nex-games";
-}
 
 function getCategoryAccent(division: Category["brandDivision"], index: number): CategoryAccent {
   if (division === "rox-fitness") {
@@ -37,7 +34,7 @@ export function CategoryCard({ category, index = 0 }: CategoryCardProps) {
   return (
     <Link
       className="group block overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-card-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-accent)]"
-      href={`${getDivisionPath(category.brandDivision)}?category=${category.slug}`}
+      href={getCategoryPath(category.slug)}
     >
       <div
         className={cn(
@@ -49,7 +46,7 @@ export function CategoryCard({ category, index = 0 }: CategoryCardProps) {
           alt={`${category.name} category`}
           className="object-cover transition duration-500 group-hover:scale-105"
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+          sizes="(max-width: 768px) calc(100vw - 40px), (max-width: 1280px) calc((100vw - 72px) / 2), 25rem"
           src={category.image}
         />
       </div>

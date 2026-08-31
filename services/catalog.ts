@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getCategories } from "@/services/categories";
-import { getProductCatalog, getProducts } from "@/services/products";
+import { getProductCatalog, getProductSummaries } from "@/services/products";
 import type { BrandDivision, ProductSort, StockStatus } from "@/types/product";
 
 export type PublicCatalogQuery = {
@@ -57,7 +57,7 @@ export async function getPublicCatalog(query: PublicCatalogQuery) {
       sort: query.sort,
       stockStatus: query.stock,
     }),
-    getProducts({
+    getProductSummaries({
       active: true,
       brandDivision: query.division,
       featured: true,
@@ -72,4 +72,3 @@ export async function getPublicCatalog(query: PublicCatalogQuery) {
     ...catalog,
   };
 }
-

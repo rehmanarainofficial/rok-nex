@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { PRODUCT_DIVISION_IDS } from "@/constants/product-divisions";
-import { getProducts } from "@/services/products";
+import { getProductSummaries } from "@/services/products";
 import type { BrandDivision } from "@/types/product";
 
 export async function GET(request: NextRequest) {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const products = await getProducts({
+    const products = await getProductSummaries({
       brandDivision: brandDivision ? (brandDivision as BrandDivision) : undefined,
       category: category ?? undefined,
       active: true,
@@ -29,9 +29,10 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ products });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to load products.";
-
-    return NextResponse.json({ error: message }, { status: 503 });
+  } catch {
+    return NextResponse.json(
+      { error: "Product catalog is temporarily unavailable." },
+      { status: 503 },
+    );
   }
 }

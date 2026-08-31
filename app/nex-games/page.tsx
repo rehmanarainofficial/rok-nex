@@ -17,6 +17,21 @@ export const metadata: Metadata = {
   title: "Nex Games",
   description:
     "Browse Nex Games wholesale board games, indoor games, sports games, and recreation products.",
+  alternates: {
+    canonical: "/nex-games",
+  },
+  openGraph: {
+    title: "Nex Games",
+    description:
+      "Wholesale board games, indoor games, sports games, and recreation products.",
+    url: "/nex-games",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nex Games",
+    description: "Browse Nex Games wholesale board, indoor, and recreation products.",
+  },
 };
 
 export const dynamic = "force-dynamic";

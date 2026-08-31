@@ -3,7 +3,13 @@ import "server-only";
 import { connectToDatabase } from "@/lib/mongodb";
 import { validateProductInput, type ProductInput } from "@/lib/validation/catalog";
 import { ProductModel } from "@/models/product";
-import type { BrandDivision, Product, ProductSort, StockStatus } from "@/types/product";
+import type {
+  BrandDivision,
+  Product,
+  ProductSort,
+  ProductSummary,
+  StockStatus,
+} from "@/types/product";
 
 type ProductQuery = {
   brandDivision?: BrandDivision;
@@ -48,6 +54,43 @@ type ProductDocumentWithId = {
   updatedAt: Date;
 };
 
+type ProductSummaryDocumentWithId = Pick<
+  ProductDocumentWithId,
+  | "name"
+  | "slug"
+  | "shortDescription"
+  | "brandDivision"
+  | "category"
+  | "regularPrice"
+  | "salePrice"
+  | "priceDisplay"
+  | "stockQuantity"
+  | "stockStatus"
+  | "thumbnail"
+  | "badge"
+  | "sortOrder"
+  | "createdAt"
+  | "updatedAt"
+>;
+
+const productSummaryProjection = {
+  name: 1,
+  slug: 1,
+  shortDescription: 1,
+  brandDivision: 1,
+  category: 1,
+  regularPrice: 1,
+  salePrice: 1,
+  priceDisplay: 1,
+  stockQuantity: 1,
+  stockStatus: 1,
+  thumbnail: 1,
+  badge: 1,
+  sortOrder: 1,
+  createdAt: 1,
+  updatedAt: 1,
+} as const;
+
 function serializeProduct(product: ProductDocumentWithId): Product {
   return {
     id: product._id.toString(),
@@ -76,6 +119,23 @@ function serializeProduct(product: ProductDocumentWithId): Product {
     seoDescription: product.seoDescription,
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
+  };
+}
+
+function serializeProductSummary(product: ProductSummaryDocumentWithId): ProductSummary {
+  return {
+    name: product.name,
+    slug: product.slug,
+    shortDescription: product.shortDescription,
+    brandDivision: product.brandDivision,
+    category: product.category,
+    regularPrice: product.regularPrice,
+    salePrice: product.salePrice,
+    priceDisplay: product.priceDisplay,
+    stockQuantity: product.stockQuantity,
+    stockStatus: product.stockStatus,
+    thumbnail: product.thumbnail,
+    badge: product.badge,
   };
 }
 
@@ -140,6 +200,27 @@ export async function getProducts(query: ProductQuery = {}) {
   return products.map(serializeProduct);
 }
 
+export async function getProductSummaries(query: ProductQuery = {}) {
+  await connectToDatabase();
+
+  const filters = getProductFilters(query);
+  const productQuery = ProductModel.find(filters, productSummaryProjection)
+    .sort(getSort(query.sort))
+    .lean<ProductSummaryDocumentWithId[]>();
+
+  if (query.limit) {
+    productQuery.limit(query.limit);
+  }
+
+  if (query.page && query.perPage) {
+    productQuery.skip((query.page - 1) * query.perPage).limit(query.perPage);
+  }
+
+  const products = await productQuery.exec();
+
+  return products.map(serializeProductSummary);
+}
+
 export async function getProductCatalog(query: ProductQuery = {}) {
   await connectToDatabase();
 
@@ -147,11 +228,11 @@ export async function getProductCatalog(query: ProductQuery = {}) {
   const perPage = Math.min(48, Math.max(1, query.perPage ?? 12));
   const filters = getProductFilters(query);
   const [products, total] = await Promise.all([
-    ProductModel.find(filters)
+    ProductModel.find(filters, productSummaryProjection)
       .sort(getSort(query.sort))
       .skip((page - 1) * perPage)
       .limit(perPage)
-      .lean<ProductDocumentWithId[]>()
+      .lean<ProductSummaryDocumentWithId[]>()
       .exec(),
     ProductModel.countDocuments(filters).exec(),
   ]);
@@ -159,7 +240,7 @@ export async function getProductCatalog(query: ProductQuery = {}) {
   return {
     page,
     perPage,
-    products: products.map(serializeProduct),
+    products: products.map(serializeProductSummary),
     total,
     totalPages: Math.max(1, Math.ceil(total / perPage)),
   };
@@ -173,6 +254,41 @@ export async function getProductBySlug(slug: string) {
     .exec();
 
   return product ? serializeProduct(product) : null;
+}
+
+export async function getRelatedProducts(product: Product, limit = 4) {
+  await connectToDatabase();
+
+  const related = await ProductModel.find({
+    active: true,
+    slug: { $ne: product.slug },
+    brandDivision: product.brandDivision,
+    $or: [
+      { category: product.category },
+      ...(product.tags.length ? [{ tags: { $in: product.tags } }] : []),
+    ],
+  }, productSummaryProjection)
+    .sort({ featured: -1, sortOrder: 1, updatedAt: -1 })
+    .limit(limit)
+    .lean<ProductSummaryDocumentWithId[]>()
+    .exec();
+
+  return related.map(serializeProductSummary);
+}
+
+export async function getSitemapProducts(limit = 5000) {
+  await connectToDatabase();
+
+  const products = await ProductModel.find(
+    { active: true },
+    { slug: 1, updatedAt: 1 },
+  )
+    .sort({ updatedAt: -1 })
+    .limit(limit)
+    .lean<Array<Pick<ProductDocumentWithId, "slug" | "updatedAt">>>()
+    .exec();
+
+  return products;
 }
 
 export async function getProductById(id: string) {

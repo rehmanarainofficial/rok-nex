@@ -19,6 +19,21 @@ export const metadata: Metadata = {
   title: "Products",
   description:
     "Browse the complete Rox & Nex wholesale showcase catalog across Rox Fitness and Nex Games.",
+  alternates: {
+    canonical: "/products",
+  },
+  openGraph: {
+    title: "Rox & Nex Products",
+    description:
+      "Browse the complete Rox & Nex wholesale showcase catalog across Rox Fitness and Nex Games.",
+    url: "/products",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rox & Nex Products",
+    description: "Search and filter wholesale Rox Fitness and Nex Games products.",
+  },
 };
 
 export const dynamic = "force-dynamic";

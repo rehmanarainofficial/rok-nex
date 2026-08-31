@@ -1,4 +1,12 @@
-import { BarChart3, Boxes, FolderTree, Globe2, LogOut, Settings } from "lucide-react";
+import {
+  BarChart3,
+  Boxes,
+  FolderTree,
+  Globe2,
+  Inbox,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -9,6 +17,7 @@ const navigation = [
   { label: "Dashboard", href: "/admin", Icon: BarChart3 },
   { label: "Products", href: "/admin/products", Icon: Boxes },
   { label: "Categories", href: "/admin/categories", Icon: FolderTree },
+  { label: "Inquiries", href: "/admin/inquiries", Icon: Inbox },
   { label: "Settings", href: "/admin/settings", Icon: Settings },
 ];
 

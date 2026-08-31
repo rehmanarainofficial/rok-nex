@@ -2,10 +2,30 @@ import { LockKeyhole, ShieldCheck } from "lucide-react";
 
 import { AdminCard } from "@/components/admin/admin-card";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { DataError } from "@/components/admin/data-error";
+import { SiteSettingsForm } from "@/components/admin/site-settings-form";
 import { requireAdminPage } from "@/lib/auth/admin-page";
+import { defaultSiteSettings, getSiteSettings } from "@/services/site-settings";
 
-export default async function AdminSettingsPage() {
+type AdminSettingsPageProps = {
+  searchParams: Promise<{
+    error?: string;
+    saved?: string;
+  }>;
+};
+
+export default async function AdminSettingsPage({ searchParams }: AdminSettingsPageProps) {
   await requireAdminPage();
+
+  const params = await searchParams;
+  let siteSettings = defaultSiteSettings;
+  let error: string | null = null;
+
+  try {
+    siteSettings = await getSiteSettings();
+  } catch {
+    error = "Unable to load site settings from MongoDB.";
+  }
 
   const settings = [
     {
@@ -31,9 +51,19 @@ export default async function AdminSettingsPage() {
   return (
     <>
       <AdminPageHeader
-        description="Read-only environment and security status for the current admin setup."
+        description="Manage public contact information, social links, footer copy, and default SEO content."
         title="Site Settings"
       />
+      {params.saved ? (
+        <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+          Settings {params.saved}.
+        </div>
+      ) : null}
+      {params.error ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+          {params.error}
+        </div>
+      ) : null}
       <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
         <AdminCard className="p-5">
           <ShieldCheck className="text-red-600" size={28} />
@@ -57,6 +87,21 @@ export default async function AdminSettingsPage() {
                 <p className="text-sm font-semibold text-neutral-500">{setting.value}</p>
               </div>
             ))}
+          </div>
+        </AdminCard>
+      </div>
+      <div className="mt-5">
+        {error ? <DataError message={error} /> : null}
+        <AdminCard className="p-5">
+          <h2 className="font-display text-2xl font-bold text-neutral-950">
+            Public Website Settings
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-neutral-500">
+            These values feed the footer, contact page, and homepage SEO
+            defaults.
+          </p>
+          <div className="mt-6">
+            <SiteSettingsForm settings={siteSettings} />
           </div>
         </AdminCard>
       </div>

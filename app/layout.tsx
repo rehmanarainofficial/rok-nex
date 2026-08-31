@@ -4,36 +4,72 @@ import type { ReactNode } from "react";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { bodyFont, displayFont } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
+import { absoluteUrl, serializeJsonLd } from "@/utilities/seo";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : undefined,
+  metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
+    url: "/",
+    siteName: siteConfig.name,
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: siteConfig.name,
+  url: absoluteUrl("/"),
+  brand: [
+    {
+      "@type": "Brand",
+      name: "Rox Fitness",
+    },
+    {
+      "@type": "Brand",
+      name: "Nex Games",
+    },
+  ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${bodyFont.variable} ${displayFont.variable} h-full scroll-smooth antialiased`}
+      className={`${bodyFont.variable} ${displayFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
         <ThemeScript />
       </head>
       <body className="min-h-full bg-[var(--color-background)] text-[var(--color-text)]">
+        <script
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd) }}
+          id="organization-jsonld"
+          type="application/ld+json"
+        />
         {children}
       </body>
     </html>

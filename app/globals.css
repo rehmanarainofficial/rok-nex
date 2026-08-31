@@ -76,6 +76,7 @@
 html {
   background: var(--color-background);
   scroll-padding-top: 6rem;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -132,6 +133,20 @@ select:focus {
 ::selection {
   background: var(--color-accent);
   color: white;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+}
+
+:where(section, [id]) {
+  scroll-margin-top: 6rem;
+}
+
+:where(a, button, input, textarea, select) {
+  touch-action: manipulation;
 }
 
 .hero-shell {
@@ -282,6 +297,43 @@ select:focus {
   flex: none;
 }
 
+.reveal-surface {
+  opacity: 0;
+  transform: translate3d(0, 1.6rem, 0) scale(0.985);
+  transition:
+    opacity 640ms cubic-bezier(0.2, 0.75, 0.2, 1) var(--reveal-delay, 0ms),
+    transform 640ms cubic-bezier(0.2, 0.75, 0.2, 1) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-surface.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.depth-card {
+  transform-style: preserve-3d;
+}
+
+.depth-card::after {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  content: "";
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-accent) 15%, transparent),
+    transparent 42%
+  );
+  transition: opacity 260ms ease;
+}
+
+.depth-card:hover::after {
+  opacity: 1;
+}
+
 @keyframes loading-bar {
   0% {
     transform: translateX(-100%);
@@ -362,5 +414,11 @@ select:focus {
 
   .hero-scene {
     transform: none !important;
+  }
+
+  .reveal-surface {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
   }
 }

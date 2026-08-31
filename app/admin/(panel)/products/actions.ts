@@ -42,6 +42,22 @@ function readNumber(formData: FormData, key: string) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function getSafeProductFormError(error: unknown, fallback: string) {
+  if (!(error instanceof Error)) {
+    return fallback;
+  }
+
+  if (
+    error.message.includes("supported image type") ||
+    error.message.includes("larger than 5 MB") ||
+    error.message.includes("valid image file")
+  ) {
+    return error.message;
+  }
+
+  return fallback;
+}
+
 function readSpecifications(formData: FormData) {
   const labels = formData.getAll("specLabel").map(String);
   const values = formData.getAll("specValue").map(String);
@@ -145,7 +161,7 @@ export async function createProductAction(
     }
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Unable to create product.",
+      error: getSafeProductFormError(error, "Unable to create product."),
     };
   }
 
@@ -168,7 +184,7 @@ export async function updateProductAction(
     }
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Unable to update product.",
+      error: getSafeProductFormError(error, "Unable to update product."),
     };
   }
 
