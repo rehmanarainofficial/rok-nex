@@ -1,26 +1,138 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  --color-background: #f7f5f2;
+  --color-background-alt: #ece8e2;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f1eee9;
+  --color-card: rgba(255, 255, 255, 0.84);
+  --color-text: #151312;
+  --color-muted: #68615d;
+  --color-border: rgba(21, 19, 18, 0.12);
+  --color-border-strong: rgba(21, 19, 18, 0.24);
+  --color-accent: #d71920;
+  --color-accent-strong: #a90f16;
+  --color-red-glow: rgba(215, 25, 32, 0.2);
+
+  --radius-sm: 0.5rem;
+  --radius-card: 0.5rem;
+  --radius-pill: 999px;
+  --container-max: 78rem;
+  --section-spacing: clamp(4rem, 8vw, 7.5rem);
+  --text-hero: clamp(4.25rem, 12vw, 11rem);
+  --text-section: clamp(2.45rem, 5vw, 5.75rem);
+  --shadow-soft: 0 10px 30px rgba(21, 19, 18, 0.08);
+  --shadow-card: 0 24px 80px rgba(21, 19, 18, 0.08);
+  --shadow-card-hover: 0 30px 90px rgba(21, 19, 18, 0.14);
+  --shadow-red: 0 18px 42px rgba(215, 25, 32, 0.26);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-text);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  color-scheme: dark;
+
+  --color-background: #0c0b0b;
+  --color-background-alt: #171313;
+  --color-surface: #131111;
+  --color-surface-raised: #1d1919;
+  --color-card: rgba(22, 19, 19, 0.86);
+  --color-text: #f7f2ec;
+  --color-muted: #aaa09a;
+  --color-border: rgba(247, 242, 236, 0.12);
+  --color-border-strong: rgba(247, 242, 236, 0.24);
+  --color-accent: #f23a3f;
+  --color-accent-strong: #ff5257;
+  --color-red-glow: rgba(242, 58, 63, 0.26);
+  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.24);
+  --shadow-card: 0 28px 90px rgba(0, 0, 0, 0.32);
+  --shadow-card-hover: 0 34px 100px rgba(0, 0, 0, 0.44);
+  --shadow-red: 0 20px 48px rgba(242, 58, 63, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-background);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
+  background:
+    linear-gradient(180deg, var(--color-background), var(--color-background-alt) 130vh)
+    fixed;
+  color: var(--color-text);
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  text-rendering: geometricPrecision;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+input,
+select {
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+}
+
+textarea {
+  min-height: 7.5rem;
+  padding: 0.75rem 0.875rem;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: white;
+}
+
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(70%);
+  }
+
+  100% {
+    transform: translateX(220%);
+  }
 }
