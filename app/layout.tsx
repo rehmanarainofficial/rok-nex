@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { bodyFont, displayFont } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
@@ -35,11 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeScript />
       </head>
       <body className="min-h-full bg-[var(--color-background)] text-[var(--color-text)]">
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          {children}
-          <SiteFooter />
-        </div>
+        {children}
       </body>
     </html>
   );

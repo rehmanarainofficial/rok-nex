@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { PRODUCT_DIVISION_IDS } from "@/constants/product-divisions";
 import { getProducts } from "@/services/products";
-import type { ProductDivisionId } from "@/types/product";
+import type { BrandDivision } from "@/types/product";
 
 export async function GET(request: NextRequest) {
-  const division = request.nextUrl.searchParams.get("division");
+  const brandDivision =
+    request.nextUrl.searchParams.get("brandDivision") ??
+    request.nextUrl.searchParams.get("division");
+  const category = request.nextUrl.searchParams.get("category");
   const featured = request.nextUrl.searchParams.get("featured");
+  const limit = request.nextUrl.searchParams.get("limit");
 
-  if (division && !PRODUCT_DIVISION_IDS.includes(division as ProductDivisionId)) {
+  if (brandDivision && !PRODUCT_DIVISION_IDS.includes(brandDivision as BrandDivision)) {
     return NextResponse.json(
       { error: "Unsupported product division." },
       { status: 400 },
@@ -17,8 +21,11 @@ export async function GET(request: NextRequest) {
 
   try {
     const products = await getProducts({
-      division: division ? (division as ProductDivisionId) : undefined,
+      brandDivision: brandDivision ? (brandDivision as BrandDivision) : undefined,
+      category: category ?? undefined,
+      active: true,
       featured: featured === null ? undefined : featured === "true",
+      limit: limit ? Number(limit) : undefined,
     });
 
     return NextResponse.json({ products });

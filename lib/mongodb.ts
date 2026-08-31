@@ -29,9 +29,15 @@ export async function connectToDatabase() {
     throw new Error("MONGODB_URI is not configured.");
   }
 
-  cached.promise ??= mongoose.connect(uri, {
-    bufferCommands: false,
-  });
+  cached.promise ??= mongoose
+    .connect(uri, {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+    })
+    .catch((error) => {
+      cached.promise = null;
+      throw error;
+    });
 
   cached.connection = await cached.promise;
 

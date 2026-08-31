@@ -7,7 +7,11 @@ export const PRODUCT_DIVISIONS: ProductDivision[] = [
     eyebrow: "Fitness division",
     description:
       "Strength, conditioning, exercise, and gym-ready products for wholesale buyers.",
-    productFocus: ["Fitness equipment", "Exercise accessories", "Training essentials"],
+    productFocus: [
+      "Fitness Equipment",
+      "Strength Training",
+      "Training Accessories",
+    ],
   },
   {
     id: "nex-games",
@@ -15,7 +19,7 @@ export const PRODUCT_DIVISIONS: ProductDivision[] = [
     eyebrow: "Games division",
     description:
       "Board games, indoor games, sports games, and related products for bulk customers.",
-    productFocus: ["Board games", "Indoor games", "Sports games"],
+    productFocus: ["Board Games", "Indoor Games", "Sports Games"],
   },
 ];
 
