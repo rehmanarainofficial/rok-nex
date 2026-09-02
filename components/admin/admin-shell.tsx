@@ -44,7 +44,7 @@ export function AdminShell({ children, email }: AdminShellProps) {
         <aside className="border-b border-black/10 bg-white lg:border-b-0 lg:border-r">
           <div className="flex h-full flex-col gap-6 p-4 lg:sticky lg:top-0 lg:min-h-screen lg:p-5">
             <div className="flex items-center justify-between gap-4 lg:block">
-              <BrandMark compact />
+              <BrandMark compact variant="black" />
               <p className="hidden truncate text-xs font-semibold text-neutral-500 lg:mt-3 lg:block">
                 {email}
               </p>

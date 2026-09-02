@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     title: "Nex Games",
     description:
       "Board games, indoor games, sports games, and recreation products.",
+    images: ["/opengraph-image"],
     url: "/nex-games",
     type: "website",
   },
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nex Games",
     description: "Browse Nex Games board, indoor, and recreation products.",
+    images: ["/opengraph-image"],
   },
 };
 

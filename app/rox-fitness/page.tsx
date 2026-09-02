@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     title: "Rox Fitness",
     description:
       "Fitness products for strength, movement, performance, and everyday training.",
+    images: ["/opengraph-image"],
     url: "/rox-fitness",
     type: "website",
   },
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Rox Fitness",
     description: "Browse Rox Fitness strength and training products.",
+    images: ["/opengraph-image"],
   },
 };
 

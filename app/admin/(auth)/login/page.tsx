@@ -33,7 +33,7 @@ export default async function AdminLoginPage() {
       style={adminTheme}
     >
       <Card className="w-full max-w-md p-6 sm:p-8">
-        <BrandMark />
+        <BrandMark variant="black" />
         <div className="my-8 space-y-3">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--color-accent)]">
             Admin Panel

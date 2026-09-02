@@ -26,6 +26,7 @@ export const metadata: Metadata = {
     title: "Rox & Nex Products",
     description:
       "Browse the complete Rox & Nex product showcase catalog across Rox Fitness and Nex Games.",
+    images: ["/opengraph-image"],
     url: "/products",
     type: "website",
   },
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Rox & Nex Products",
     description: "Search and filter Rox Fitness and Nex Games products.",
+    images: ["/opengraph-image"],
   },
 };
 

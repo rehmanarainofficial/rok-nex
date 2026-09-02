@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About Rox & Nex",
     description: "Rox & Nex organizes sports, fitness, and games products into two clear divisions.",
+    images: ["/opengraph-image"],
     url: "/about",
     type: "website",
   },
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Rox & Nex",
     description: "Rox & Nex organizes sports products into two focused divisions.",
+    images: ["/opengraph-image"],
   },
 };
 

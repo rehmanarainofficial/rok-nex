@@ -22,7 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = settings.homepageSeoTitle || defaultSiteSettings.homepageSeoTitle;
   const description =
     settings.homepageSeoDescription || defaultSiteSettings.homepageSeoDescription;
-  const images = settings.defaultSeoImage ? [absoluteUrl(settings.defaultSeoImage)] : undefined;
+  const images = settings.defaultSeoImage
+    ? [absoluteUrl(settings.defaultSeoImage)]
+    : ["/opengraph-image"];
 
   return {
     title,

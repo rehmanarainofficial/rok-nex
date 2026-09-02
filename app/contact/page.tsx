@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contact Rox & Nex",
     description: "Send product requirements or catalog inquiries to Rox & Nex.",
+    images: ["/opengraph-image"],
     url: "/contact",
     type: "website",
   },
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Contact Rox & Nex",
     description: "Contact Rox & Nex for product inquiries.",
+    images: ["/opengraph-image"],
   },
 };
 

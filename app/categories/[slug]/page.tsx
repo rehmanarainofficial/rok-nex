@@ -45,6 +45,7 @@ export async function generateMetadata({
 
     const title = `${category.name} Products`;
     const description = category.description;
+    const images = category.image ? [absoluteUrl(category.image)] : ["/opengraph-image"];
 
     return {
       title,
@@ -56,14 +57,14 @@ export async function generateMetadata({
         title,
         description,
         url: getCategoryPath(category.slug),
-        images: category.image ? [absoluteUrl(category.image)] : undefined,
+        images,
         type: "website",
       },
       twitter: {
         card: "summary_large_image",
         title,
         description,
-        images: category.image ? [absoluteUrl(category.image)] : undefined,
+        images,
       },
     };
   } catch {

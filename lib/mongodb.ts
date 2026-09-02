@@ -1,5 +1,6 @@
 import "server-only";
 
+import dns from "node:dns";
 import mongoose from "mongoose";
 
 type MongooseCache = {
@@ -18,6 +19,40 @@ const cached = globalForMongoose.mongooseCache ?? {
 
 globalForMongoose.mongooseCache = cached;
 
+const DATABASE_CONNECT_TIMEOUT_MS = Number(
+  process.env.MONGODB_CONNECT_TIMEOUT_MS || 5000,
+);
+const DEFAULT_DNS_SERVERS = ["8.8.8.8", "1.1.1.1"];
+
+function configureMongoSrvDns(uri: string) {
+  if (!uri.startsWith("mongodb+srv://")) {
+    return;
+  }
+
+  const dnsServers = (process.env.MONGODB_DNS_SERVERS || DEFAULT_DNS_SERVERS.join(","))
+    .split(",")
+    .map((server) => server.trim())
+    .filter(Boolean);
+
+  if (dnsServers.length) {
+    dns.setServers(dnsServers);
+  }
+}
+
+function withConnectionTimeout(promise: Promise<typeof mongoose>) {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  const timeoutPromise = new Promise<typeof mongoose>((_, reject) => {
+    timeout = setTimeout(() => {
+      reject(new Error("Database connection timed out."));
+    }, DATABASE_CONNECT_TIMEOUT_MS);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    clearTimeout(timeout);
+  });
+}
+
 export async function connectToDatabase() {
   if (cached.connection) {
     return cached.connection;
@@ -29,17 +64,26 @@ export async function connectToDatabase() {
     throw new Error("MONGODB_URI is not configured.");
   }
 
+  configureMongoSrvDns(uri);
+
   cached.promise ??= mongoose
     .connect(uri, {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: DATABASE_CONNECT_TIMEOUT_MS,
+      serverSelectionTimeoutMS: DATABASE_CONNECT_TIMEOUT_MS,
+      socketTimeoutMS: 10000,
     })
     .catch((error) => {
       cached.promise = null;
       throw error;
     });
 
-  cached.connection = await cached.promise;
+  try {
+    cached.connection = await withConnectionTimeout(cached.promise);
+  } catch (error) {
+    cached.promise = null;
+    throw error;
+  }
 
   return cached.connection;
 }
