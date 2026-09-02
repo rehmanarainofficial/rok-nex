@@ -1,22 +1,13 @@
 "use client";
 
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 
 import { BrandMark } from "@/components/layout/brand-mark";
-import { GlobalSearch } from "@/components/search/global-search";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { Container } from "@/components/ui/container";
 import { useHeaderScrolled } from "@/hooks/use-scroll-state";
-import type { BrandDivision } from "@/types/product";
 import { cn } from "@/utilities/cn";
 
 const navigation = [
@@ -28,31 +19,14 @@ const navigation = [
   { label: "Contact", href: "/contact" },
 ];
 
-export type HeaderCategoryLink = {
-  brandDivision: BrandDivision;
-  name: string;
-  slug: string;
-};
-
-type SiteHeaderProps = {
-  categories?: HeaderCategoryLink[];
-};
-
-const emptyCategories: HeaderCategoryLink[] = [];
-
-export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
+export function SiteHeader() {
   const scrolled = useHeaderScrolled();
   const menuId = useId();
-  const searchDialogId = useId();
-  const searchTitleId = useId();
-  const searchPanelRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     function handleKeyDown(event: globalThis.KeyboardEvent) {
       if (event.key === "Escape") {
-        setIsSearchOpen(false);
         setIsMenuOpen(false);
       }
     }
@@ -64,37 +38,6 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
 
   const closePanels = useCallback(() => {
     setIsMenuOpen(false);
-    setIsSearchOpen(false);
-  }, []);
-
-  const handleSearchKeyDown = useCallback((event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== "Tab") {
-      return;
-    }
-
-    const panel = searchPanelRef.current;
-    const focusableElements = panel
-      ? Array.from(
-          panel.querySelectorAll<HTMLElement>(
-            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-          ),
-        ).filter((element) => element.offsetParent !== null)
-      : [];
-
-    if (!focusableElements.length) {
-      return;
-    }
-
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    if (event.shiftKey && document.activeElement === firstElement) {
-      event.preventDefault();
-      lastElement?.focus();
-    } else if (!event.shiftKey && document.activeElement === lastElement) {
-      event.preventDefault();
-      firstElement?.focus();
-    }
   }, []);
 
   return (
@@ -125,16 +68,6 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <button
-            aria-controls={searchDialogId}
-            aria-expanded={isSearchOpen}
-            aria-label={isSearchOpen ? "Close site search" : "Open site search"}
-            className="grid size-10 place-items-center rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-[var(--shadow-soft)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-            onClick={() => setIsSearchOpen((value) => !value)}
-            type="button"
-          >
-            <Search aria-hidden="true" size={18} />
-          </button>
           <ThemeSwitcher />
           <button
             aria-controls={menuId}
@@ -151,41 +84,11 @@ export function SiteHeader({ categories = emptyCategories }: SiteHeaderProps) {
             )}
           </button>
         </div>
-
-        {isSearchOpen ? (
-          <div
-            aria-labelledby={searchTitleId}
-            aria-modal="true"
-            className="absolute left-5 right-5 top-[calc(100%+0.75rem)] max-h-[min(72vh,38rem)] overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-solid)] p-4 shadow-[var(--shadow-popover)] backdrop-blur-xl sm:left-auto sm:w-[30rem]"
-            id={searchDialogId}
-            onKeyDown={handleSearchKeyDown}
-            ref={searchPanelRef}
-            role="dialog"
-          >
-            <div className="mb-3 flex items-center justify-between gap-4">
-              <h2
-                className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-accent)]"
-                id={searchTitleId}
-              >
-                Product Search
-              </h2>
-              <button
-                aria-label="Close site search"
-                className="grid size-9 place-items-center rounded-[var(--radius-pill)] text-[var(--color-muted)] transition hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-                onClick={() => setIsSearchOpen(false)}
-                type="button"
-              >
-                <X aria-hidden="true" size={17} />
-              </button>
-            </div>
-            <GlobalSearch categories={categories} onNavigate={closePanels} />
-          </div>
-        ) : null}
       </Container>
 
       {isMenuOpen ? (
         <div
-          className="border-t border-[var(--color-border)] bg-[var(--color-card-solid)] lg:hidden"
+          className="absolute inset-x-0 top-full border-y border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-card-solid)_96%,transparent)] shadow-[var(--shadow-popover)] backdrop-blur-xl lg:hidden"
           id={menuId}
         >
           <Container className="grid gap-1 py-3">

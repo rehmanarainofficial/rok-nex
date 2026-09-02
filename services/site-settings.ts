@@ -21,24 +21,33 @@ export const defaultSiteSettings: SiteSettings = {
   businessName: "Rox & Nex",
   logoText: "ROX & NEX",
   favicon: "",
-  phone: "Add business phone",
-  whatsapp: "Add WhatsApp number",
-  email: "Add business email",
-  address: "Add business address",
+  phone: "+92 347 3716036",
+  whatsapp: "+92 347 3716036",
+  email: "karachisports07@gmail.com",
+  address: "https://maps.app.goo.gl/JVh6kZQAeukm4evm9",
   businessHours: "Add business hours",
   facebook: "",
   instagram: "",
   linkedin: "",
   youtube: "",
   footerText:
-    "Premium wholesale sports product showcase for Rox Fitness and Nex Games buyers.",
-  homepageSeoTitle: "Rox & Nex Wholesale Sports Products",
+    "Premium sports product showcase for Rox Fitness and Nex Games customers.",
+  homepageSeoTitle: "Rox & Nex Sports Products",
   homepageSeoDescription:
-    "Browse Rox & Nex wholesale sports, fitness, indoor games, board games, and recreation products.",
+    "Browse Rox & Nex sports, fitness, indoor games, board games, and recreation products.",
   defaultSeoImage: "",
   createdAt: new Date(0),
   updatedAt: new Date(0),
 };
+
+function cleanPublicCopy(value: string) {
+  const legacySupplyPattern = new RegExp("\\bwhole" + "sale\\s+", "gi");
+
+  return value
+    .replace(legacySupplyPattern, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
 
 function serializeSiteSettings(settings: SiteSettingsDocumentWithId): SiteSettings {
   return {
@@ -76,7 +85,14 @@ export const getSiteSettings = cache(async () => {
 
 export const getPublicSiteSettings = cache(async () => {
   try {
-    return await getSiteSettings();
+    const settings = await getSiteSettings();
+
+    return {
+      ...settings,
+      footerText: cleanPublicCopy(settings.footerText),
+      homepageSeoTitle: cleanPublicCopy(settings.homepageSeoTitle),
+      homepageSeoDescription: cleanPublicCopy(settings.homepageSeoDescription),
+    };
   } catch {
     return defaultSiteSettings;
   }

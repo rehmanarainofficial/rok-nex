@@ -1,129 +1,140 @@
-import { Dumbbell, Gamepad2, PackageCheck, ShieldCheck } from "lucide-react";
+import { ArrowRight, Dumbbell, Gamepad2, PackageCheck, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { getPublicCategories } from "@/services/public-navigation";
 
 export const metadata: Metadata = {
   title: "About Rox & Nex",
   description:
-    "Learn about Rox & Nex, a wholesale sports product showcase with Rox Fitness and Nex Games divisions.",
+    "Learn about Rox & Nex, a sports product showcase with Rox Fitness and Nex Games divisions.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "About Rox & Nex",
-    description:
-      "Learn about the Rox Fitness and Nex Games wholesale sports product divisions.",
+    description: "Rox & Nex organizes sports, fitness, and games products into two clear divisions.",
     url: "/about",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "About Rox & Nex",
-    description: "Rox & Nex organizes wholesale sports products into two focused divisions.",
+    description: "Rox & Nex organizes sports products into two focused divisions.",
   },
 };
 
-export const dynamic = "force-dynamic";
-
-const values = [
+const principles = [
   {
     icon: PackageCheck,
-    title: "Wholesale Product Range",
-    text: "A focused catalog for buyers comparing fitness, sports, indoor game, and board game products.",
+    title: "Focused Catalog",
+    text: "Products are presented with clean images, clear descriptions, and stock status.",
   },
   {
     icon: ShieldCheck,
     title: "Quality Positioning",
-    text: "Product pages are structured around specifications, availability, images, and buyer-ready details.",
+    text: "The site keeps the product range polished without unnecessary checkout complexity.",
   },
   {
     icon: Dumbbell,
     title: "Rox Fitness",
-    text: "The performance-led division for strength, training, movement, and everyday exercise equipment.",
+    text: "Training, movement, strength, and everyday fitness products.",
   },
   {
     icon: Gamepad2,
     title: "Nex Games",
-    text: "The recreation-led division for board games, indoor games, sports games, and play-focused products.",
+    text: "Board games, indoor games, sports games, and recreation products.",
   },
 ];
 
-export default async function AboutPage() {
-  const categories = await getPublicCategories();
+export const dynamic = "force-dynamic";
 
+export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <section className="relative border-b border-[var(--color-border)] py-[var(--section-spacing)]">
-          <Container className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_78%_22%,var(--color-red-glow),transparent_34%)]" />
+          <Container className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
             <ScrollReveal>
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--color-accent)]">
                   About Rox & Nex
                 </p>
-                <h1 className="mt-5 font-display text-[length:var(--text-section)] font-black leading-none text-[var(--color-text)]">
-                  Sports supply, shaped for wholesale discovery.
+                <h1 className="mt-5 max-w-4xl font-display text-[length:var(--text-section)] font-normal leading-none text-[var(--color-text)]">
+                  Sports, fitness, and games in one sharp product catalog.
                 </h1>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay={130}>
-              <p className="max-w-2xl text-lg leading-8 text-[var(--color-muted)]">
-                Rox & Nex presents sports, fitness, and games products through two
-                clear divisions: Rox Fitness for training-focused equipment and Nex
-                Games for board, indoor, recreational, and sports games. The website
-                is designed for wholesale customers to browse product information
-                before contacting the business.
-              </p>
+            <ScrollReveal delay={120}>
+              <div className="max-w-2xl border-l border-[var(--color-border)] pl-6">
+                <p className="text-lg leading-8 text-[var(--color-muted)]">
+                  Rox & Nex brings two product worlds together: Rox Fitness for
+                  performance and training, Nex Games for indoor play, board
+                  games, and recreation. The website is made for quick browsing,
+                  clean product review, and direct contact.
+                </p>
+              </div>
             </ScrollReveal>
           </Container>
         </section>
 
         <section className="py-[var(--section-spacing)]">
-          <Container className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <ScrollReveal>
-              <SectionHeading
-                description="The brand separates product discovery by buyer intent while keeping one premium Rox & Nex identity."
-                eyebrow="Divisions"
-                title="Built around two product worlds."
-              />
-            </ScrollReveal>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <ScrollReveal delay={80}>
-                <Card className="min-h-full p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
+          <Container>
+            <div className="grid overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] lg:grid-cols-2">
+              <ScrollReveal>
+                <Link
+                  className="group relative block min-h-[28rem] overflow-hidden bg-[#111] p-7 text-white sm:p-9"
+                  href="/rox-fitness"
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(242,58,63,0.28),transparent_42%)]" />
+                  <p className="relative text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
                     Rox Fitness
                   </p>
-                  <h2 className="mt-4 font-display text-4xl font-black text-[var(--color-text)]">
-                    Performance products for training.
+                  <h2 className="relative mt-5 max-w-xl font-display text-5xl font-normal leading-none sm:text-6xl">
+                    Built for movement and strength.
                   </h2>
-                  <p className="mt-4 leading-7 text-[var(--color-muted)]">
-                    Equipment built for strength, movement, performance, and everyday
-                    exercise environments.
+                  <p className="relative mt-5 max-w-md leading-7 text-white/70">
+                    Fitness equipment and training products arranged for fast,
+                    confident product discovery.
                   </p>
-                </Card>
+                  <span className="relative mt-8 inline-flex items-center gap-2 text-sm font-bold text-white">
+                    Explore Rox Fitness
+                    <ArrowRight className="transition group-hover:translate-x-1" size={17} />
+                  </span>
+                  <span className="absolute -bottom-5 left-6 font-display text-[9rem] font-normal leading-none text-white/10 sm:text-[12rem]">
+                    ROX
+                  </span>
+                </Link>
               </ScrollReveal>
-              <ScrollReveal delay={150}>
-                <Card className="min-h-full p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
+              <ScrollReveal delay={120}>
+                <Link
+                  className="group relative block min-h-[28rem] overflow-hidden bg-[var(--color-surface)] p-7 sm:p-9"
+                  href="/nex-games"
+                >
+                  <div className="absolute inset-0 bg-[linear-gradient(135deg,var(--color-surface),var(--color-card-solid))]" />
+                  <p className="relative text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
                     Nex Games
                   </p>
-                  <h2 className="mt-4 font-display text-4xl font-black text-[var(--color-text)]">
-                    Recreation products for fast browsing.
+                  <h2 className="relative mt-5 max-w-xl font-display text-5xl font-normal leading-none text-[var(--color-text)] sm:text-6xl">
+                    Made for play and discovery.
                   </h2>
-                  <p className="mt-4 leading-7 text-[var(--color-muted)]">
-                    Board games, indoor games, sports games, and game-related products
-                    organized for wholesale evaluation.
+                  <p className="relative mt-5 max-w-md leading-7 text-[var(--color-muted)]">
+                    Board games, indoor games, and recreation products presented
+                    with a premium but simple browsing experience.
                   </p>
-                </Card>
+                  <span className="relative mt-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--color-text)]">
+                    Explore Nex Games
+                    <ArrowRight className="transition group-hover:translate-x-1" size={17} />
+                  </span>
+                  <span className="absolute -bottom-5 left-6 font-display text-[9rem] font-normal leading-none text-[var(--color-text)]/10 sm:text-[12rem]">
+                    NEX
+                  </span>
+                </Link>
               </ScrollReveal>
             </div>
           </Container>
@@ -132,24 +143,27 @@ export default async function AboutPage() {
         <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]">
           <Container className="space-y-10">
             <ScrollReveal>
-              <SectionHeading
-                description="No invented company history or inflated statistics are shown here. Verified business milestones can be added when available."
-                eyebrow="Wholesale Focus"
-                title="Clear product information first."
-              />
+              <div className="max-w-4xl">
+                <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
+                  What matters
+                </p>
+                <h2 className="mt-5 font-display text-[length:var(--text-section)] font-normal leading-none text-[var(--color-text)]">
+                  Clear product information without extra noise.
+                </h2>
+              </div>
             </ScrollReveal>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {values.map((item, index) => (
-                <ScrollReveal delay={Math.min(index * 70, 220)} key={item.title}>
-                  <Card className="min-h-full p-5">
-                    <item.icon aria-hidden="true" className="text-[var(--color-accent)]" />
-                    <h3 className="mt-5 font-display text-2xl font-bold text-[var(--color-text)]">
+              {principles.map((item, index) => (
+                <ScrollReveal delay={Math.min(index * 60, 180)} key={item.title}>
+                  <div className="min-h-full border-t border-[var(--color-border)] pt-5">
+                    <item.icon aria-hidden="true" className="text-[var(--color-accent)]" size={25} />
+                    <h3 className="mt-6 font-display text-2xl font-normal text-[var(--color-text)]">
                       {item.title}
                     </h3>
                     <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">
                       {item.text}
                     </p>
-                  </Card>
+                  </div>
                 </ScrollReveal>
               ))}
             </div>
@@ -164,22 +178,23 @@ export default async function AboutPage() {
                   <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
                     Product Catalog
                   </p>
-                  <h2 className="mt-4 font-display text-5xl font-black text-[var(--color-text)]">
-                    Explore the current wholesale showcase.
+                  <h2 className="mt-4 max-w-4xl font-display text-4xl font-normal leading-tight text-[var(--color-text)] sm:text-5xl">
+                    Browse the current Rox & Nex product range.
                   </h2>
                 </div>
                 <Link
-                  className="inline-flex h-12 w-fit items-center justify-center rounded-[var(--radius-pill)] bg-[var(--color-accent)] px-6 text-sm font-bold text-white shadow-[var(--shadow-red)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                  className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--color-accent)] px-6 text-sm font-bold text-white shadow-[var(--shadow-red)] transition hover:bg-[var(--color-accent-strong)]"
                   href="/products"
                 >
                   View Products
+                  <ArrowRight aria-hidden="true" size={17} />
                 </Link>
               </div>
             </ScrollReveal>
           </Container>
         </section>
       </main>
-      <SiteFooter categories={categories} />
+      <SiteFooter />
     </div>
   );
 }

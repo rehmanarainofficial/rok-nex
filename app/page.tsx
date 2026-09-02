@@ -1,11 +1,11 @@
 import { ArrowRight, Database, Mail, PackageCheck, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { DivisionShowcase } from "@/components/home/division-showcase";
 import { HeroSection } from "@/components/home/hero-section";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { CategoryCard } from "@/components/product/category-card";
 import { ProductCard } from "@/components/product/product-card";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -58,9 +58,9 @@ export default async function Home() {
       getCategories({ active: true }),
       getProductSummaries({ active: true, featured: true, limit: 8 }),
     ]);
-  } catch (caught) {
+  } catch {
     catalogError =
-      caught instanceof Error ? caught.message : "Unable to load catalog data.";
+      "Catalog data is temporarily unavailable. Please try again shortly.";
   }
 
   const roxProducts = products
@@ -72,130 +72,122 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <HeroSection />
 
-      <section className="py-[var(--section-spacing)]" id="divisions">
-        <Container className="space-y-10">
-          <SectionHeading
-            description="Category cards are now powered by MongoDB category data, so admin changes flow into the public website."
-            eyebrow="Featured Categories"
-            title="Wholesale categories built for fast buyer scanning."
-          />
-          {catalogError ? (
-            <EmptyState
-              description={catalogError}
-              title="Category data unavailable"
-            />
-          ) : categories.length ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {categories.map((category, index) => (
-                <CategoryCard category={category} index={index} key={category.slug} />
-              ))}
+        <DivisionShowcase
+          ctaLabel="Explore Rox Fitness"
+          description="Fitness equipment, strength training products, and training accessories for daily movement and performance."
+          eyebrow="ROX FITNESS"
+          id="rox-fitness"
+          products={roxProducts}
+          title="Fitness products for stronger training."
+        />
+
+        <DivisionShowcase
+          ctaLabel="Explore Nex Games"
+          description="Board games, indoor games, and recreational sports products presented in a clean product-first catalog."
+          eyebrow="NEX GAMES"
+          id="nex-games"
+          products={nexProducts}
+          title="Games and sports products made easy to browse."
+          variant="inverted"
+        />
+
+        <section
+          className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]"
+          id="products"
+        >
+          <Container className="space-y-10">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <SectionHeading
+                description="Featured products come from MongoDB with current images, descriptions, and stock information."
+                eyebrow="Featured Products"
+                title="Simple product cards with the details that matter."
+              />
+              <div className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-muted)]">
+                <PackageCheck aria-hidden="true" className="text-[var(--color-accent)]" size={16} />
+                Product catalog
+              </div>
             </div>
-          ) : (
-            <EmptyState
-              description="Create active categories from the admin panel to populate this homepage section."
-              title="No categories yet"
-            />
-          )}
-        </Container>
-      </section>
+            {catalogError ? (
+              <EmptyState
+                description={catalogError}
+                title="Featured products unavailable"
+              />
+            ) : products.length ? (
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                {products.slice(0, 4).map((product, index) => (
+                  <ProductCard key={product.slug} priority={index < 2} product={product} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                description="Mark products as featured in the admin panel to populate the homepage showcase."
+                title="No featured products yet"
+              />
+            )}
+          </Container>
+        </section>
 
-      <DivisionShowcase
-        ctaLabel="Explore Rox Fitness"
-        description="Rox Fitness is the performance division for fitness equipment, strength training products, and training accessories built for repeat wholesale demand."
-        eyebrow="ROX FITNESS"
-        id="rox-fitness"
-        products={roxProducts}
-        title="Fitness supply with a stronger retail presence."
-      />
-
-      <DivisionShowcase
-        ctaLabel="Explore Nex Games"
-        description="Nex Games gives buyers a visually distinct games range across board games, indoor games, and recreational sports products."
-        eyebrow="NEX GAMES"
-        id="nex-games"
-        products={nexProducts}
-        title="Game-led products for homes, clubs, and retail shelves."
-        variant="inverted"
-      />
-
-      <section
-        className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]"
-        id="products"
-      >
-        <Container className="space-y-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <SectionHeading
-              description="Featured products are pulled from MongoDB, giving wholesale buyers current images, pricing, category, stock, badges, and product details."
-              eyebrow="Featured Products"
-              title="Distinctive cards for catalog-first selling."
-            />
-            <div className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-muted)]">
-              <PackageCheck aria-hidden="true" className="text-[var(--color-accent)]" size={16} />
-              No checkout flow
-            </div>
-          </div>
-          {catalogError ? (
-            <EmptyState
-              description={catalogError}
-              title="Featured products unavailable"
-            />
-          ) : products.length ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {products.slice(0, 4).map((product, index) => (
-                <ProductCard key={product.slug} priority={index < 2} product={product} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              description="Mark products as featured in the admin panel to populate the homepage showcase."
-              title="No featured products yet"
-            />
-          )}
-        </Container>
-      </section>
-
-      <section className="py-[var(--section-spacing)]">
-        <Container className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-          <SectionHeading
-            description="Customers browse the catalog, compare stock and specifications, then contact the company for pricing tiers, cartons, availability, and supply requirements."
-            eyebrow="Wholesale supply"
-            title="Built for business inquiries, not online checkout."
-          />
-          <Card className="relative overflow-hidden p-7">
-            <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_70%_30%,var(--color-red-glow),transparent_58%)]" />
-            <div className="relative grid gap-5 sm:grid-cols-3">
-              {[
-                ["Browse", "Review category ranges and featured products."],
-                ["Compare", "Check pricing, stock status, specs, and badges."],
-                ["Contact", "Share wholesale requirements through direct channels."],
-              ].map(([title, description]) => (
-                <div
-                  className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
-                  key={title}
-                >
-                  <p className="font-display text-2xl font-bold text-[var(--color-text)]">
-                    {title}
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">
-                    {description}
-                  </p>
+        <section className="py-[var(--section-spacing)]">
+          <Container>
+            <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[linear-gradient(135deg,var(--color-card-solid),var(--color-surface))]">
+              <div className="absolute inset-y-0 right-0 w-2/3 bg-[radial-gradient(circle_at_76%_32%,var(--color-red-glow),transparent_42%)]" />
+              <div className="relative grid gap-8 p-6 sm:p-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-stretch lg:p-10">
+                <div className="flex min-h-72 flex-col justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--color-accent)]">
+                      Product flow
+                    </p>
+                    <h2 className="mt-5 max-w-2xl font-display text-[length:var(--text-section)] font-normal leading-none text-[var(--color-text)]">
+                      Pick a range. Check stock. Get in touch.
+                    </h2>
+                  </div>
+                  <Link
+                    className="mt-8 inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--color-accent)] px-6 text-sm font-bold text-white shadow-[var(--shadow-red)] transition hover:-translate-y-0.5 hover:bg-[var(--color-accent-strong)]"
+                    href="/products"
+                  >
+                    Browse Products
+                    <ArrowRight aria-hidden="true" size={17} />
+                  </Link>
                 </div>
-              ))}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="relative min-h-72 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[#120f0f] p-6 text-white">
+                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--color-accent)]">
+                      Rox Fitness
+                    </span>
+                    <p className="absolute -bottom-5 left-5 font-display text-[7rem] font-normal leading-none text-white/10 sm:text-[9rem]">
+                      ROX
+                    </p>
+                    <p className="relative mt-20 max-w-xs text-xl leading-7">
+                      Fitness, strength, and movement products in one focused view.
+                    </p>
+                  </div>
+                  <div className="relative min-h-72 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-6">
+                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--color-accent)]">
+                      Nex Games
+                    </span>
+                    <p className="absolute -bottom-5 left-5 font-display text-[7rem] font-normal leading-none text-[var(--color-text)]/10 sm:text-[9rem]">
+                      NEX
+                    </p>
+                    <p className="relative mt-20 max-w-xs text-xl leading-7 text-[var(--color-text)]">
+                      Board games, indoor games, and sports products made easy to browse.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </Card>
-        </Container>
-      </section>
+          </Container>
+        </section>
 
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]" id="about">
+        <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]" id="about">
         <Container className="space-y-10">
           <SectionHeading
             description="Concise brand values keep the site buyer-focused while the database layer handles scale behind the scenes."
             eyebrow="Brand value"
-            title="The essentials wholesale customers care about."
+            title="The essentials product customers care about."
           />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {VALUE_POINTS.map((point, index) => (
@@ -215,9 +207,9 @@ export default async function Home() {
             ))}
           </div>
         </Container>
-      </section>
+        </section>
 
-      <section
+        <section
         className="relative isolate overflow-hidden py-[var(--section-spacing)]"
         id="contact"
       >
@@ -228,14 +220,14 @@ export default async function Home() {
             <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--color-accent)]">
-                  Wholesale customers
+                  Product customers
                 </p>
                 <h2 className="mt-5 font-display text-[length:var(--text-section)] font-black leading-none text-[var(--color-text)]">
                   Explore the range. Send your requirements.
                 </h2>
                 <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--color-muted)] sm:text-lg">
-                  Rox & Nex is ready for product-led wholesale conversations
-                  across fitness, board games, indoor games, and sports games.
+                  Rox & Nex makes it easy to browse fitness, board games,
+                  indoor games, and sports products in one place.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
@@ -257,7 +249,7 @@ export default async function Home() {
             </div>
           </Card>
         </Container>
-      </section>
+        </section>
       </main>
       <SiteFooter categories={categories} />
     </div>

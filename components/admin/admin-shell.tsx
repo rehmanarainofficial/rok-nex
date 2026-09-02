@@ -3,12 +3,11 @@ import {
   Boxes,
   FolderTree,
   Globe2,
-  Inbox,
   LogOut,
   Settings,
 } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { logoutAction } from "@/app/admin/(panel)/actions";
 import { BrandMark } from "@/components/layout/brand-mark";
@@ -17,7 +16,6 @@ const navigation = [
   { label: "Dashboard", href: "/admin", Icon: BarChart3 },
   { label: "Products", href: "/admin/products", Icon: Boxes },
   { label: "Categories", href: "/admin/categories", Icon: FolderTree },
-  { label: "Inquiries", href: "/admin/inquiries", Icon: Inbox },
   { label: "Settings", href: "/admin/settings", Icon: Settings },
 ];
 
@@ -26,9 +24,22 @@ type AdminShellProps = {
   email: string;
 };
 
+const adminTheme = {
+  "--color-background": "#f5f5f3",
+  "--color-background-alt": "#ececea",
+  "--color-surface": "#ffffff",
+  "--color-surface-raised": "#f4f4f2",
+  "--color-card": "#ffffff",
+  "--color-card-solid": "#ffffff",
+  "--color-text": "#141312",
+  "--color-muted": "#63605c",
+  "--color-border": "rgba(20, 19, 18, 0.12)",
+  "--color-border-strong": "rgba(20, 19, 18, 0.24)",
+} as CSSProperties;
+
 export function AdminShell({ children, email }: AdminShellProps) {
   return (
-    <div className="min-h-screen bg-[#f5f5f3] text-[#141312]">
+    <div className="min-h-screen bg-[#f5f5f3] text-[#141312]" style={adminTheme}>
       <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
         <aside className="border-b border-black/10 bg-white lg:border-b-0 lg:border-r">
           <div className="flex h-full flex-col gap-6 p-4 lg:sticky lg:top-0 lg:min-h-screen lg:p-5">

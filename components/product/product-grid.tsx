@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { PackageSearch } from "lucide-react";
 
 import { ProductCard } from "@/components/product/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -22,6 +23,7 @@ export function ProductGrid({
       <EmptyState
         action={emptyAction}
         description={emptyDescription}
+        icon={<PackageSearch aria-hidden="true" size={22} />}
         title={emptyTitle}
       />
     );

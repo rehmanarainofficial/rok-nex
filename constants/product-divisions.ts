@@ -6,7 +6,7 @@ export const PRODUCT_DIVISIONS: ProductDivision[] = [
     name: "Rox Fitness",
     eyebrow: "Fitness division",
     description:
-      "Strength, conditioning, exercise, and gym-ready products for wholesale buyers.",
+      "Strength, conditioning, exercise, and gym-ready products for serious buyers.",
     productFocus: [
       "Fitness Equipment",
       "Strength Training",
@@ -18,7 +18,7 @@ export const PRODUCT_DIVISIONS: ProductDivision[] = [
     name: "Nex Games",
     eyebrow: "Games division",
     description:
-      "Board games, indoor games, sports games, and related products for bulk customers.",
+      "Board games, indoor games, sports games, and related products for larger customers.",
     productFocus: ["Board Games", "Indoor Games", "Sports Games"],
   },
 ];

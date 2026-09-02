@@ -98,6 +98,7 @@ export type ProductSummary = Pick<
   | "slug"
   | "name"
   | "shortDescription"
+  | "description"
   | "brandDivision"
   | "category"
   | "regularPrice"
@@ -106,6 +107,7 @@ export type ProductSummary = Pick<
   | "stockQuantity"
   | "stockStatus"
   | "thumbnail"
+  | "images"
   | "badge"
 >;
 

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import type { Category } from "@/types/product";
@@ -42,6 +44,17 @@ export function CategoryNavigation({
     return null;
   }
 
+  function scrollToProducts() {
+    window.setTimeout(() => {
+      document.getElementById("product-results")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+        block: "start",
+      });
+    }, 120);
+  }
+
   return (
     <nav aria-label="Category navigation" className="flex gap-2 overflow-x-auto pb-2">
       <Link
@@ -52,6 +65,8 @@ export function CategoryNavigation({
             : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-muted)] hover:text-[var(--color-text)]",
         )}
         href={buildHref(basePath, params)}
+        onClick={scrollToProducts}
+        scroll={false}
       >
         All
       </Link>
@@ -65,6 +80,8 @@ export function CategoryNavigation({
           )}
           href={buildHref(basePath, params, category.slug)}
           key={category.slug}
+          onClick={scrollToProducts}
+          scroll={false}
         >
           {category.name}
         </Link>

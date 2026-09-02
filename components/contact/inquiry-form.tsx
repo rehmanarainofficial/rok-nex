@@ -1,69 +1,89 @@
 "use client";
 
 import { Send } from "lucide-react";
-import { useActionState, useState } from "react";
-import { useFormStatus } from "react-dom";
+import { useMemo, useState, type FormEvent } from "react";
 
-import { submitInquiryAction, type InquiryFormState } from "@/app/contact/actions";
 import type { Inquiry } from "@/types/product";
 
 type InquiryFormProps = {
   productInterest?: string;
   productSlug?: string;
   source?: Inquiry["source"];
+  whatsappNumber: string;
 };
 
-const initialState: InquiryFormState = {};
+function getFormValue(formData: FormData, key: string) {
+  return String(formData.get(key) ?? "").trim();
+}
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function createWhatsAppUrl(phone: string, message: string) {
+  const digits = phone.replace(/\D/g, "");
 
-  return (
-    <button
-      className="inline-flex h-12 items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--color-accent)] px-6 text-sm font-bold text-white shadow-[var(--shadow-red)] transition hover:bg-[var(--color-accent-strong)] disabled:pointer-events-none disabled:opacity-60"
-      disabled={pending}
-      type="submit"
-    >
-      <Send aria-hidden="true" size={17} />
-      {pending ? "Sending..." : "Send Inquiry"}
-    </button>
-  );
+  return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(message)}` : "";
 }
 
 export function InquiryForm({
   productInterest = "",
   productSlug,
   source = "contact-page",
+  whatsappNumber,
 }: InquiryFormProps) {
-  const [state, formAction] = useActionState(submitInquiryAction, initialState);
-  const [startedAt] = useState(() => Date.now());
+  const [error, setError] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const whatsAppBaseUrl = useMemo(
+    () => createWhatsAppUrl(whatsappNumber, ""),
+    [whatsappNumber],
+  );
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = getFormValue(formData, "name");
+    const phone = getFormValue(formData, "phone");
+    const message = getFormValue(formData, "message");
+
+    if (!name || !phone || !message) {
+      setError("Name, phone, and message are required.");
+      return;
+    }
+
+    if (!whatsAppBaseUrl) {
+      setError("WhatsApp number is not configured.");
+      return;
+    }
+
+    const company = getFormValue(formData, "companyName");
+    const email = getFormValue(formData, "email");
+    const interest = getFormValue(formData, "productInterest");
+    const inquiryText = [
+      "Rox & Nex Inquiry",
+      `Name: ${name}`,
+      company ? `Company: ${company}` : "",
+      `Phone: ${phone}`,
+      email ? `Email: ${email}` : "",
+      interest ? `Product Interest: ${interest}` : "",
+      productSlug ? `Product: ${productSlug}` : "",
+      `Source: ${source}`,
+      "",
+      `Message: ${message}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const url = createWhatsAppUrl(whatsappNumber, inquiryText);
+
+    setError("");
+    setIsSending(true);
+    window.open(url, "_blank", "noopener,noreferrer");
+    window.setTimeout(() => setIsSending(false), 600);
+  }
 
   return (
-    <form action={formAction} className="grid gap-4">
-      {state.error ? (
+    <form className="grid gap-4" onSubmit={handleSubmit}>
+      {error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-          {state.error}
+          {error}
         </div>
       ) : null}
-      {state.success ? (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
-          {state.success}
-        </div>
-      ) : null}
-
-      <input name="source" type="hidden" value={source} />
-      <input name="productSlug" type="hidden" value={productSlug ?? ""} />
-      <input name="startedAt" type="hidden" value={startedAt} />
-      <label className="sr-only" htmlFor="website">
-        Website
-      </label>
-      <input
-        autoComplete="off"
-        className="hidden"
-        id="website"
-        name="website"
-        tabIndex={-1}
-      />
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-bold text-[var(--color-muted)]">
@@ -93,7 +113,14 @@ export function InquiryForm({
         Message
         <textarea name="message" required />
       </label>
-      <SubmitButton />
+      <button
+        className="inline-flex h-12 w-fit items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[var(--color-accent)] px-6 text-sm font-bold text-white shadow-[var(--shadow-red)] transition hover:bg-[var(--color-accent-strong)] disabled:pointer-events-none disabled:opacity-60"
+        disabled={isSending}
+        type="submit"
+      >
+        <Send aria-hidden="true" size={17} />
+        {isSending ? "Opening WhatsApp..." : "Send on WhatsApp"}
+      </button>
     </form>
   );
 }

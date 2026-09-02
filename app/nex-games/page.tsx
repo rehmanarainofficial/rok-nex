@@ -16,21 +16,21 @@ import {
 export const metadata: Metadata = {
   title: "Nex Games",
   description:
-    "Browse Nex Games wholesale board games, indoor games, sports games, and recreation products.",
+    "Browse Nex Games board games, indoor games, sports games, and recreation products.",
   alternates: {
     canonical: "/nex-games",
   },
   openGraph: {
     title: "Nex Games",
     description:
-      "Wholesale board games, indoor games, sports games, and recreation products.",
+      "Board games, indoor games, sports games, and recreation products.",
     url: "/nex-games",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Nex Games",
-    description: "Browse Nex Games wholesale board, indoor, and recreation products.",
+    description: "Browse Nex Games board, indoor, and recreation products.",
   },
 };
 
@@ -68,18 +68,18 @@ export default async function NexGamesPage({ searchParams }: NexGamesPageProps) 
       }),
       getCategories({ active: true }),
     ]);
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load Nex Games catalog.";
+  } catch {
+    error = "The Nex Games catalog is temporarily unavailable. Please try again shortly.";
   }
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <DivisionHero
-          description="Board games, indoor games, recreational games, and sports games presented for quick wholesale discovery."
+          description="Board games, indoor games, recreational games, and sports games presented for quick product discovery."
           division="nex-games"
-          eyebrow="Premium games wholesale division"
+          eyebrow="Premium games division"
           title="NEX GAMES"
           tone="nex"
         />
@@ -102,7 +102,7 @@ export default async function NexGamesPage({ searchParams }: NexGamesPageProps) 
               description:
                 "Featured games and recreation products for buyers building tabletop, indoor, and play-focused assortments.",
               eyebrow: "Featured Games",
-              title: "Modern play products with wholesale clarity.",
+              title: "Modern play products with clear availability.",
             }}
             page={content.page}
             products={content.products}

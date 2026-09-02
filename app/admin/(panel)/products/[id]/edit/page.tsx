@@ -58,8 +58,8 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
       getProductById(id),
       getCategories(),
     ]);
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load product.";
+  } catch {
+    error = "Unable to load product details right now.";
   }
 
   return (

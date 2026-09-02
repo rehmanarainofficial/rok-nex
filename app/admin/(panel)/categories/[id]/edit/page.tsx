@@ -38,7 +38,7 @@ export default async function EditCategoryPage({
             Back to Categories
           </Link>
         }
-        description="Update category metadata, division, image, active state, and sorting."
+        description="Update category name, division, image, and active state."
         title={`Edit ${category.name}`}
       />
       {query.error ? <DataError message={query.error} /> : null}

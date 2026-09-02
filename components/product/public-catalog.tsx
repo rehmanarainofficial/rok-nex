@@ -1,4 +1,4 @@
-import { ArrowRight, PackageCheck } from "lucide-react";
+import { ArrowRight, PackageCheck, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 import { CatalogControls } from "@/components/product/catalog-controls";
@@ -67,6 +67,18 @@ export function PublicCatalog({
     sort: current.sort,
     stock: current.stock,
   };
+  const hasActiveFilters = Boolean(
+    current.category || current.division || current.q || current.stock,
+  );
+  const resetAction = hasActiveFilters ? (
+    <Link
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 text-sm font-bold text-[var(--color-text)] transition hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+      href={basePath}
+    >
+      <RotateCcw aria-hidden="true" size={15} />
+      Reset Filters
+    </Link>
+  ) : undefined;
 
   return (
     <>
@@ -87,24 +99,13 @@ export function PublicCatalog({
         </Container>
       </section>
 
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]">
-        <Container className="space-y-10">
-          <SectionHeading {...heading} />
-          <ProductGrid
-            emptyDescription="Featured products will appear here after products are marked as featured in admin."
-            emptyTitle="No featured products yet"
-            products={featuredProducts}
-          />
-        </Container>
-      </section>
-
-      <section className="py-[var(--section-spacing)]">
+      <section className="py-[var(--section-spacing)]" id="product-results">
         <Container className="space-y-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading
               description={`${total} product${total === 1 ? "" : "s"} matched the current catalog view.`}
               eyebrow="Product Grid"
-              title="Fast wholesale browsing with focused filters."
+              title="Fast product browsing with focused filters."
             />
             <div className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-muted)]">
               <PackageCheck aria-hidden="true" className="text-[var(--color-accent)]" size={16} />
@@ -113,6 +114,7 @@ export function PublicCatalog({
           </div>
           <ProductGrid
             emptyDescription="No products match this catalog view yet. Adjust the filters or add active products from the admin panel."
+            emptyAction={resetAction}
             emptyTitle="No products found"
             products={products}
           />
@@ -125,6 +127,17 @@ export function PublicCatalog({
         </Container>
       </section>
 
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)] py-[var(--section-spacing)]">
+        <Container className="space-y-10">
+          <SectionHeading {...heading} />
+          <ProductGrid
+            emptyDescription="Featured products will appear here after products are marked as featured in admin."
+            emptyTitle="No featured products yet"
+            products={featuredProducts}
+          />
+        </Container>
+      </section>
+
       <section className="pb-[var(--section-spacing)]">
         <Container>
           <Card className="relative overflow-hidden p-7 sm:p-10">
@@ -132,7 +145,7 @@ export function PublicCatalog({
             <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--color-accent)]">
-                  Wholesale ready
+                  Catalog ready
                 </p>
                 <h2 className="mt-5 font-display text-[length:var(--text-section)] font-black leading-none text-[var(--color-text)]">
                   {promo.title}

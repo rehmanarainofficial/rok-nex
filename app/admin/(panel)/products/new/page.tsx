@@ -13,14 +13,14 @@ export default async function AddProductPage() {
 
   try {
     categories = await getCategories();
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load categories.";
+  } catch {
+    error = "Unable to load categories right now.";
   }
 
   return (
     <>
       <AdminPageHeader
-        description="Create a new wholesale showcase product with images, stock, pricing, specifications, and SEO metadata."
+        description="Create a new showcase product with images, stock, pricing, specifications, and SEO metadata."
         title="Add Product"
       />
       {error ? (

@@ -9,7 +9,6 @@ import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import { DataError } from "@/components/admin/data-error";
 import { requireAdminPage } from "@/lib/auth/admin-page";
 import { getProducts } from "@/services/products";
-import { formatWholesalePrice } from "@/utilities/formatters";
 import type { BrandDivision, StockStatus } from "@/types/product";
 
 type ProductsPageProps = {
@@ -22,10 +21,6 @@ type ProductsPageProps = {
     status?: StockStatus;
   }>;
 };
-
-function formatDivision(division: BrandDivision) {
-  return division === "rox-fitness" ? "Rox Fitness" : "Nex Games";
-}
 
 export default async function AdminProductsPage({ searchParams }: ProductsPageProps) {
   await requireAdminPage();
@@ -44,8 +39,8 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
       search: params.q,
       stockStatus: params.status,
     });
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load products.";
+  } catch {
+    error = "Unable to load products right now.";
   }
 
   return (
@@ -97,14 +92,11 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
       ) : (
         <AdminCard className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-left text-sm">
+            <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="border-b border-black/10 bg-neutral-50 text-xs uppercase tracking-[0.14em] text-neutral-500">
                 <tr>
                   <th className="px-4 py-3">Thumbnail</th>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3">Division</th>
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3">Price</th>
+                  <th className="px-4 py-3">Title & Description</th>
                   <th className="px-4 py-3">Stock</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Featured</th>
@@ -127,14 +119,16 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
                       </td>
                       <td className="px-4 py-3">
                         <p className="font-bold text-neutral-950">{product.name}</p>
-                        <p className="text-xs text-neutral-500">{product.sku ?? product.slug}</p>
+                        <p className="mt-1 max-w-xl text-xs leading-5 text-neutral-500">
+                          {product.shortDescription}
+                        </p>
                       </td>
-                      <td className="px-4 py-3">{formatDivision(product.brandDivision)}</td>
-                      <td className="px-4 py-3">{product.category}</td>
                       <td className="px-4 py-3">
-                        {product.priceDisplay ?? formatWholesalePrice(product.salePrice ?? product.regularPrice)}
+                        <span className="font-bold text-neutral-950">{product.stockQuantity}</span>
+                        <span className="mt-1 block text-xs capitalize text-neutral-500">
+                          {product.stockStatus.replaceAll("-", " ")}
+                        </span>
                       </td>
-                      <td className="px-4 py-3">{product.stockQuantity}</td>
                       <td className="px-4 py-3">
                         <form action={toggleProductActiveAction}>
                           <input name="id" type="hidden" value={product.id} />
@@ -179,7 +173,7 @@ export default async function AdminProductsPage({ searchParams }: ProductsPagePr
                   ))
                 ) : (
                   <tr>
-                    <td className="px-4 py-10 text-center text-neutral-500" colSpan={9}>
+                    <td className="px-4 py-10 text-center text-neutral-500" colSpan={6}>
                       No products found.
                     </td>
                   </tr>

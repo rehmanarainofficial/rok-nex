@@ -3,8 +3,7 @@ export function ThemeScript() {
     (() => {
       try {
         const stored = localStorage.getItem("rox-nex-theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = stored || (prefersDark ? "dark" : "light");
+        const theme = stored || "dark";
         document.documentElement.classList.toggle("dark", theme === "dark");
         document.documentElement.dataset.theme = theme;
       } catch {

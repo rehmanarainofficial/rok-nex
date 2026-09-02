@@ -18,21 +18,21 @@ import type { BrandDivision } from "@/types/product";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Browse the complete Rox & Nex wholesale showcase catalog across Rox Fitness and Nex Games.",
+    "Browse the complete Rox & Nex product showcase catalog across Rox Fitness and Nex Games.",
   alternates: {
     canonical: "/products",
   },
   openGraph: {
     title: "Rox & Nex Products",
     description:
-      "Browse the complete Rox & Nex wholesale showcase catalog across Rox Fitness and Nex Games.",
+      "Browse the complete Rox & Nex product showcase catalog across Rox Fitness and Nex Games.",
     url: "/products",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Rox & Nex Products",
-    description: "Search and filter wholesale Rox Fitness and Nex Games products.",
+    description: "Search and filter Rox Fitness and Nex Games products.",
   },
 };
 
@@ -78,17 +78,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       }),
       getCategories({ active: true }),
     ]);
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load product catalog.";
+  } catch {
+    error = "The product catalog is temporarily unavailable. Please try again shortly.";
   }
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <DivisionHero
-          description="Browse both Rox Fitness and Nex Games in one fast wholesale catalog with search, division, category, availability, and simple sorting."
-          eyebrow="Complete wholesale showcase"
+          description="Browse both Rox Fitness and Nex Games in one fast catalog with search, division, category, availability, and simple sorting."
+          eyebrow="Complete product showcase"
           title="PRODUCTS"
           tone="all"
         />
@@ -109,7 +109,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             featuredProducts={content.featuredProducts}
             heading={{
               description:
-                "Featured products from both Rox Fitness and Nex Games for high-priority wholesale browsing.",
+                "Featured products from both Rox Fitness and Nex Games for high-priority product browsing.",
               eyebrow: "Featured Products",
               title: "Highlighted catalog picks across both divisions.",
             }}
@@ -119,8 +119,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               ctaHref: "/#contact",
               ctaLabel: "Contact Company",
               description:
-                "Use the catalog to shortlist products, then contact Rox & Nex with required quantities, delivery needs, and wholesale questions.",
-              title: "A catalog built for wholesale conversations.",
+                "Use the catalog to shortlist products, then contact Rox & Nex with required quantities, delivery needs, and product questions.",
+              title: "A catalog built for product conversations.",
             }}
             showDivisionFilter
             showSort

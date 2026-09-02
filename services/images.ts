@@ -1,12 +1,12 @@
 import "server-only";
 
-import { mkdir, writeFile } from "fs/promises";
-import { extname, join } from "path";
-import { randomUUID } from "crypto";
+import { createHash, randomUUID } from "crypto";
+import { extname } from "path";
 
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ALLOWED_IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1";
 
 export type StoredImage = {
   url: string;
@@ -37,6 +37,35 @@ function hasValidImageSignature(buffer: Buffer, mimeType: string) {
   return false;
 }
 
+function getCloudinaryConfig() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+  const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
+  const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
+  const folder = process.env.CLOUDINARY_UPLOAD_FOLDER?.trim() || "rox-nex/products";
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    throw new Error("Cloudinary image upload is not configured.");
+  }
+
+  return { apiKey, apiSecret, cloudName, folder };
+}
+
+function signCloudinaryParams(
+  params: Record<string, string | number>,
+  apiSecret: string,
+) {
+  const payload = Object.entries(params)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return createHash("sha1").update(`${payload}${apiSecret}`).digest("hex");
+}
+
+type CloudinaryUploadResponse = {
+  secure_url?: string;
+};
+
 export async function storeProductImage(file: File): Promise<StoredImage | null> {
   if (!file.size) {
     return null;
@@ -58,15 +87,40 @@ export async function storeProductImage(file: File): Promise<StoredImage | null>
     throw new Error(`${file.name} does not appear to be a valid image file.`);
   }
 
-  const filename = `${randomUUID()}${extension.toLowerCase()}`;
-  const uploadDir = join(process.cwd(), "public", "uploads", "products");
-  const destination = join(uploadDir, filename);
+  const { apiKey, apiSecret, cloudName, folder } = getCloudinaryConfig();
+  const timestamp = Math.floor(Date.now() / 1000);
+  const publicId = randomUUID();
+  const uploadParams = {
+    folder,
+    public_id: publicId,
+    timestamp,
+  };
+  const formData = new FormData();
 
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(destination, buffer);
+  formData.set("file", new Blob([buffer], { type: file.type }), file.name);
+  formData.set("api_key", apiKey);
+  formData.set("folder", folder);
+  formData.set("public_id", publicId);
+  formData.set("timestamp", String(timestamp));
+  formData.set("signature", signCloudinaryParams(uploadParams, apiSecret));
+
+  const response = await fetch(`${CLOUDINARY_UPLOAD_URL}/${cloudName}/image/upload`, {
+    body: formData,
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error("Cloudinary image upload failed.");
+  }
+
+  const payload = (await response.json()) as CloudinaryUploadResponse;
+
+  if (!payload.secure_url) {
+    throw new Error("Cloudinary image upload failed.");
+  }
 
   return {
-    url: `/uploads/products/${filename}`,
+    url: payload.secure_url,
     alt: file.name.replace(extension, "").replaceAll("-", " ").trim() || "Product image",
   };
 }

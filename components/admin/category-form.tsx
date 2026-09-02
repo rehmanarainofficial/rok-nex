@@ -15,35 +15,23 @@ export function CategoryForm({ action, buttonLabel, category }: CategoryFormProp
         Name
         <input defaultValue={category?.name} name="name" required />
       </label>
-      <label className="grid gap-2 text-sm font-bold text-neutral-700">
-        Slug
-        <input defaultValue={category?.slug} name="slug" required />
-      </label>
+      <input name="slug" type="hidden" value={category?.slug ?? ""} />
+      <input name="sortOrder" type="hidden" value={category?.sortOrder ?? 0} />
+      <input name="existingImage" type="hidden" value={category?.image ?? ""} />
       <label className="grid gap-2 text-sm font-bold text-neutral-700">
         Description
         <textarea defaultValue={category?.description} name="description" required />
       </label>
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="grid gap-2 text-sm font-bold text-neutral-700">
-          Division
-          <select defaultValue={category?.brandDivision ?? "rox-fitness"} name="brandDivision" required>
-            <option value="rox-fitness">Rox Fitness</option>
-            <option value="nex-games">Nex Games</option>
-          </select>
-        </label>
-        <label className="grid gap-2 text-sm font-bold text-neutral-700">
-          Sort order
-          <input defaultValue={category?.sortOrder ?? 0} name="sortOrder" type="number" />
-        </label>
-      </div>
+      <label className="grid gap-2 text-sm font-bold text-neutral-700">
+        Division
+        <select defaultValue={category?.brandDivision ?? "rox-fitness"} name="brandDivision" required>
+          <option value="rox-fitness">Rox Fitness</option>
+          <option value="nex-games">Nex Games</option>
+        </select>
+      </label>
       <label className="grid gap-2 text-sm font-bold text-neutral-700">
         Image
-        <input
-          defaultValue={category?.image}
-          name="image"
-          placeholder="/catalog/category-fitness-equipment.svg"
-          required
-        />
+        <input accept="image/jpeg,image/png,image/webp" name="categoryImage" type="file" />
       </label>
       {category?.image ? (
         <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-black/10 bg-neutral-100">

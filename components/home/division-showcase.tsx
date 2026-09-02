@@ -3,7 +3,6 @@ import type { CSSProperties } from "react";
 
 import { ProductCard } from "@/components/product/product-card";
 import { Container } from "@/components/ui/container";
-import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
 import type { ProductSummary } from "@/types/product";
 
@@ -66,17 +65,12 @@ export function DivisionShowcase({
           </a>
         </div>
         {products.length ? (
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {products.map((product) => (
               <ProductCard key={product.slug} product={product} />
             ))}
           </div>
-        ) : (
-          <EmptyState
-            description="Featured products for this division will appear here after active products are created in admin."
-            title="No division products yet"
-          />
-        )}
+        ) : null}
       </Container>
     </section>
   );

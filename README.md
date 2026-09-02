@@ -1,6 +1,6 @@
 # Rox & Nex
 
-Production-ready Next.js foundation for a wholesale sports products showcase.
+Production-ready Next.js foundation for a sports products showcase.
 
 ## Stack
 
@@ -53,7 +53,7 @@ npm run build
 
 ## Product Divisions
 
-Rox & Nex supports two wholesale catalog divisions:
+Rox & Nex supports two product catalog divisions:
 
 - Rox Fitness: fitness and exercise-related products
 - Nex Games: board games, indoor games, sports games, and related products

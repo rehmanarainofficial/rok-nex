@@ -86,7 +86,7 @@ export function DivisionHero({
                 {tone === "rox" ? "Strength" : tone === "nex" ? "Play" : "Catalog"}
               </p>
               <p className="mt-4 text-sm font-semibold leading-6 text-[var(--color-muted)]">
-                Fast wholesale discovery with live category, stock, and product data.
+                Fast product discovery with live category, stock, and product data.
               </p>
             </div>
           </div>

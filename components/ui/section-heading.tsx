@@ -20,17 +20,17 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "flex max-w-3xl flex-col gap-4",
+        "flex w-full max-w-full flex-col gap-4 lg:max-w-[75%]",
         align === "center" && "mx-auto items-center text-center",
       )}
     >
       {eyebrow ? (
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-accent)]">
+        <p className="text-xs font-medium uppercase tracking-[0.24em] text-[var(--color-accent)]">
           {eyebrow}
         </p>
       ) : null}
       <div className="space-y-4">
-        <h2 className="font-display text-[length:var(--text-section)] font-bold leading-[0.98] text-[var(--color-text)]">
+        <h2 className="font-display text-[length:var(--text-section)] font-normal leading-[1.04] text-[var(--color-text)]">
           {title}
         </h2>
         {description ? (

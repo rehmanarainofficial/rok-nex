@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { FloatingSocials } from "@/components/layout/floating-socials";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { bodyFont, displayFont } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
@@ -34,6 +35,11 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -71,6 +77,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
         />
         {children}
+        <FloatingSocials />
       </body>
     </html>
   );

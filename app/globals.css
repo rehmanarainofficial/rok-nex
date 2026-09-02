@@ -24,10 +24,10 @@
   --radius-sm: 0.5rem;
   --radius-card: 0.5rem;
   --radius-pill: 999px;
-  --container-max: 78rem;
+  --container-max: 96rem;
   --section-spacing: clamp(4rem, 8vw, 7.5rem);
-  --text-hero: clamp(4.25rem, 12vw, 11rem);
-  --text-section: clamp(2.45rem, 5vw, 5.75rem);
+  --text-hero: clamp(3.4rem, 6.3vw, 7.5rem);
+  --text-section: clamp(2rem, 3.2vw, 4.25rem);
   --shadow-soft: 0 10px 30px rgba(21, 19, 18, 0.08);
   --shadow-card: 0 24px 80px rgba(21, 19, 18, 0.08);
   --shadow-card-hover: 0 30px 90px rgba(21, 19, 18, 0.14);
@@ -89,6 +89,17 @@ body {
   text-rendering: geometricPrecision;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  font-weight: 400 !important;
+  letter-spacing: 0;
+}
+
 button,
 input,
 textarea,
@@ -111,10 +122,25 @@ select {
     background-color 180ms ease;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--color-muted) 72%, transparent);
+}
+
 input,
 select {
   min-height: 2.75rem;
   padding: 0 0.875rem;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 1rem;
+  min-width: 1rem;
+  height: 1rem;
+  min-height: 1rem;
+  padding: 0;
+  accent-color: var(--color-accent);
 }
 
 textarea {
@@ -163,7 +189,7 @@ select:focus {
 
 .hero-scene {
   position: relative;
-  min-height: clamp(22rem, 46vw, 42rem);
+  min-height: clamp(28rem, 42vw, 46rem);
   transform-style: preserve-3d;
   transform:
     rotateX(var(--tilt-x))
@@ -208,16 +234,16 @@ select:focus {
 
 .hero-core {
   position: absolute;
-  inset: 19% 12%;
+  inset: 12% 2%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(0.8rem, 2vw, 1.25rem);
+  gap: clamp(1rem, 2.2vw, 2rem);
   transform: translateZ(72px) rotateX(6deg) rotateY(-10deg);
 }
 
 .hero-core__panel {
   display: flex;
-  min-height: clamp(14rem, 26vw, 24rem);
+  min-height: clamp(18rem, 26vw, 28rem);
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
@@ -242,8 +268,8 @@ select:focus {
 
 .hero-core__panel span {
   font-family: var(--font-heading), var(--font-body), sans-serif;
-  font-size: clamp(3rem, 7vw, 6.4rem);
-  font-weight: 900;
+  font-size: clamp(4rem, 7vw, 7.5rem);
+  font-weight: 400;
   line-height: 0.85;
   color: var(--color-text);
 }
@@ -334,6 +360,44 @@ select:focus {
   opacity: 1;
 }
 
+.state-grid {
+  background-image:
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 2.2rem 2.2rem;
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+}
+
+.skeleton-surface {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-surface-raised),
+      color-mix(in srgb, var(--color-surface) 72%, var(--color-surface-raised)),
+      var(--color-surface-raised)
+    );
+}
+
+.skeleton-surface::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, white 34%, transparent),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: loading-bar 1.35s ease-in-out infinite;
+}
+
+.floating-whatsapp {
+  animation: whatsapp-pulse 2.3s ease-in-out infinite;
+}
+
 @keyframes loading-bar {
   0% {
     transform: translateX(-100%);
@@ -377,6 +441,19 @@ select:focus {
   }
 }
 
+@keyframes whatsapp-pulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 18px 42px rgba(37, 211, 102, 0.34);
+  }
+
+  50% {
+    transform: translateY(-0.2rem) scale(1.04);
+    box-shadow: 0 24px 54px rgba(37, 211, 102, 0.48);
+  }
+}
+
 @media (max-width: 767px) {
   :root {
     --text-hero: clamp(3.25rem, 17vw, 5.25rem);
@@ -384,11 +461,11 @@ select:focus {
   }
 
   .hero-scene {
-    min-height: 22rem;
+    min-height: 24rem;
   }
 
   .hero-core {
-    inset: 18% 3%;
+    inset: 16% 2%;
   }
 
   .hero-float {
@@ -420,5 +497,13 @@ select:focus {
     opacity: 1;
     transform: none;
     will-change: auto;
+  }
+
+  .skeleton-surface::after {
+    animation: none;
+  }
+
+  .floating-whatsapp {
+    animation: none;
   }
 }

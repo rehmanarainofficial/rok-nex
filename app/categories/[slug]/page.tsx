@@ -43,7 +43,7 @@ export async function generateMetadata({
       };
     }
 
-    const title = `${category.name} Wholesale Products`;
+    const title = `${category.name} Products`;
     const description = category.description;
 
     return {
@@ -109,14 +109,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `${category.name} Wholesale Products`,
+    name: `${category.name} Products`,
     description: category.description,
     url: absoluteUrl(getCategoryPath(category.slug)),
   };
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <script
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
@@ -199,7 +199,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               <SectionHeading
                 description={`${products.length} active product${products.length === 1 ? "" : "s"} are currently connected to this category.`}
                 eyebrow="Category Products"
-                title="Wholesale products in this category."
+                title="Products in this category."
               />
             </ScrollReveal>
             <ProductGrid

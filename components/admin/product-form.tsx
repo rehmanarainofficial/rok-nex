@@ -3,11 +3,16 @@
 import { Plus, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import type { ChangeEvent, ReactNode } from "react";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import type { ProductFormState } from "@/app/admin/(panel)/products/actions";
-import type { BrandDivision, ProductImage, ProductSpecification, StockStatus } from "@/types/product";
+import type {
+  BrandDivision,
+  ProductImage,
+  ProductSpecification,
+  StockStatus,
+} from "@/types/product";
 
 export type AdminProductFormValue = {
   id?: string;
@@ -65,11 +70,11 @@ const emptyProduct: AdminProductFormValue = {
   regularPrice: 0,
   stockQuantity: 0,
   stockStatus: "in-stock",
-  featured: false,
+  featured: true,
   active: true,
   images: [],
   thumbnail: "",
-  specifications: [{ label: "", value: "" }],
+  specifications: [],
   tags: [],
   sortOrder: 0,
 };
@@ -90,18 +95,31 @@ function SubmitButton({ label }: { label: ReactNode }) {
   );
 }
 
+function createSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export function ProductForm({ action, categories, product }: ProductFormProps) {
   const values = product ?? emptyProduct;
   const [state, formAction] = useActionState(action, initialState);
-  const [specifications, setSpecifications] = useState<ProductSpecification[]>(
-    values.specifications.length ? values.specifications : [{ label: "", value: "" }],
-  );
+  const [name, setName] = useState(values.name);
+  const [description, setDescription] = useState(values.description);
+  const [division, setDivision] = useState<BrandDivision>(values.brandDivision);
   const [existingImages, setExistingImages] = useState<ProductImage[]>(values.images);
   const [newImagePreviews, setNewImagePreviews] = useState<NewImagePreview[]>([]);
   const [thumbnailChoice, setThumbnailChoice] = useState(
     values.thumbnail ? `existing:${values.thumbnail}` : "",
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const filteredCategories = useMemo(
+    () => categories.filter((category) => category.brandDivision === division),
+    [categories, division],
+  );
+  const fallbackCategory = filteredCategories[0]?.name ?? values.category ?? "Products";
 
   useEffect(() => {
     return () => {
@@ -113,6 +131,7 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
     newImagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
 
     const files = Array.from(event.target.files ?? []);
+
     setNewImagePreviews(
       files.map((file, index) => ({
         index,
@@ -157,16 +176,29 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
     setNewImagePreviews(nextPreviews);
 
     if (thumbnailChoice === `new:${indexToRemove}`) {
-      setThumbnailChoice(nextPreviews[0] ? "new:0" : existingImages[0] ? `existing:${existingImages[0].url}` : "");
+      setThumbnailChoice(
+        nextPreviews[0]
+          ? "new:0"
+          : existingImages[0]
+            ? `existing:${existingImages[0].url}`
+            : "",
+      );
     }
   }
 
   function removeExistingImage(url: string) {
     const nextImages = existingImages.filter((image) => image.url !== url);
+
     setExistingImages(nextImages);
 
     if (thumbnailChoice === `existing:${url}`) {
-      setThumbnailChoice(nextImages[0] ? `existing:${nextImages[0].url}` : newImagePreviews[0] ? "new:0" : "");
+      setThumbnailChoice(
+        nextImages[0]
+          ? `existing:${nextImages[0].url}`
+          : newImagePreviews[0]
+            ? "new:0"
+            : "",
+      );
     }
   }
 
@@ -178,73 +210,70 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
         </div>
       ) : null}
 
+      <input name="slug" type="hidden" value={values.slug || createSlug(name)} />
+      <input name="shortDescription" type="hidden" value={description.slice(0, 180)} />
+      <input name="regularPrice" type="hidden" value={values.regularPrice || 0} />
+      <input name="sortOrder" type="hidden" value={values.sortOrder} />
+      <input name="thumbnailChoice" type="hidden" value={thumbnailChoice} />
+
       <section className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="font-display text-2xl font-bold text-neutral-950">Product details</h2>
+        <h2 className="font-display text-2xl font-normal text-neutral-950">Product</h2>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Product name
-            <input defaultValue={values.name} name="name" required />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Slug
-            <input defaultValue={values.slug} name="slug" required />
+            Title
+            <input
+              name="name"
+              onChange={(event) => setName(event.target.value)}
+              required
+              value={name}
+            />
           </label>
           <label className="grid gap-2 text-sm font-bold text-neutral-700">
             Division
-            <select defaultValue={values.brandDivision} name="brandDivision" required>
+            <select
+              name="brandDivision"
+              onChange={(event) => setDivision(event.target.value as BrandDivision)}
+              value={division}
+            >
               <option value="rox-fitness">Rox Fitness</option>
               <option value="nex-games">Nex Games</option>
             </select>
           </label>
           <label className="grid gap-2 text-sm font-bold text-neutral-700">
             Category
-            {categories.length ? (
-              <select defaultValue={values.category} name="category" required>
-                <option value="">Select category</option>
-                {categories.map((category) => (
+            {filteredCategories.length ? (
+              <select defaultValue={values.category || fallbackCategory} name="category">
+                {filteredCategories.map((category) => (
                   <option key={category.id} value={category.name}>
                     {category.name}
                   </option>
                 ))}
               </select>
             ) : (
-              <input defaultValue={values.category} name="category" required />
+              <input defaultValue={fallbackCategory} name="category" />
             )}
           </label>
           <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Subcategory
-            <input defaultValue={values.subcategory} name="subcategory" />
+            Stock
+            <input
+              defaultValue={values.stockQuantity}
+              min="0"
+              name="stockQuantity"
+              required
+              type="number"
+            />
           </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            SKU
-            <input defaultValue={values.sku} name="sku" />
+          <label className="grid gap-2 text-sm font-bold text-neutral-700 lg:col-span-2">
+            Description
+            <textarea
+              name="description"
+              onChange={(event) => setDescription(event.target.value)}
+              required
+              value={description}
+            />
           </label>
         </div>
-        <label className="mt-4 grid gap-2 text-sm font-bold text-neutral-700">
-          Short description
-          <textarea defaultValue={values.shortDescription} name="shortDescription" required />
-        </label>
-        <label className="mt-4 grid gap-2 text-sm font-bold text-neutral-700">
-          Full description
-          <textarea defaultValue={values.description} name="description" required />
-        </label>
-      </section>
-
-      <section className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="font-display text-2xl font-bold text-neutral-950">Pricing and stock</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Regular price
-            <input defaultValue={values.regularPrice} min="0" name="regularPrice" required step="0.01" type="number" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Sale price
-            <input defaultValue={values.salePrice} min="0" name="salePrice" step="0.01" type="number" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Stock quantity
-            <input defaultValue={values.stockQuantity} min="0" name="stockQuantity" required type="number" />
-          </label>
+        <div className="mt-5 grid gap-4 sm:grid-cols-3">
           <label className="grid gap-2 text-sm font-bold text-neutral-700">
             Stock status
             <select defaultValue={values.stockStatus} name="stockStatus" required>
@@ -253,26 +282,30 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
               <option value="out-of-stock">Out of stock</option>
             </select>
           </label>
-        </div>
-        <label className="mt-4 grid gap-2 text-sm font-bold text-neutral-700">
-          Price display override
-          <input defaultValue={values.priceDisplay} name="priceDisplay" placeholder="Wholesale tiers available" />
-        </label>
-        <div className="mt-5 flex flex-wrap gap-5">
-          <label className="inline-flex items-center gap-2 text-sm font-bold text-neutral-700">
-            <input className="size-4" defaultChecked={values.active} name="active" type="checkbox" />
+          <label className="inline-flex items-center gap-2 self-end text-sm font-bold text-neutral-700">
+            <input
+              className="size-4"
+              defaultChecked={values.active}
+              name="active"
+              type="checkbox"
+            />
             Active
           </label>
-          <label className="inline-flex items-center gap-2 text-sm font-bold text-neutral-700">
-            <input className="size-4" defaultChecked={values.featured} name="featured" type="checkbox" />
+          <label className="inline-flex items-center gap-2 self-end text-sm font-bold text-neutral-700">
+            <input
+              className="size-4"
+              defaultChecked={values.featured}
+              name="featured"
+              type="checkbox"
+            />
             Featured
           </label>
         </div>
       </section>
 
       <section className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="font-display text-2xl font-bold text-neutral-950">Images</h2>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className="font-display text-2xl font-normal text-neutral-950">Images</h2>
           <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-[var(--radius-sm)] border border-black/10 px-4 text-sm font-bold text-neutral-700 transition hover:bg-neutral-50">
             <Upload aria-hidden="true" size={16} />
             Upload images
@@ -287,7 +320,6 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
             />
           </label>
         </div>
-        <input name="thumbnailChoice" type="hidden" value={thumbnailChoice} />
         <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {existingImages.map((image) => (
             <div className="rounded-lg border border-black/10 p-3" key={image.url}>
@@ -310,7 +342,7 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
                     onChange={() => setThumbnailChoice(`existing:${image.url}`)}
                     type="radio"
                   />
-                  Thumbnail
+                  Main
                 </label>
                 <button
                   className="inline-flex items-center gap-1 text-xs font-bold text-red-600"
@@ -342,7 +374,7 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
                     onChange={() => setThumbnailChoice(`new:${image.index}`)}
                     type="radio"
                   />
-                  Thumbnail
+                  Main
                 </label>
                 <button
                   className="inline-flex items-center gap-1 text-xs font-bold text-red-600"
@@ -355,66 +387,14 @@ export function ProductForm({ action, categories, product }: ProductFormProps) {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="font-display text-2xl font-bold text-neutral-950">Specifications</h2>
-          <button
-            className="inline-flex h-10 items-center gap-2 rounded-[var(--radius-sm)] border border-black/10 px-4 text-sm font-bold text-neutral-700 transition hover:bg-neutral-50"
-            onClick={() => setSpecifications((current) => [...current, { label: "", value: "" }])}
-            type="button"
-          >
-            <Plus aria-hidden="true" size={16} />
-            Add row
-          </button>
-        </div>
-        <div className="mt-5 grid gap-3">
-          {specifications.map((specification, index) => (
-            <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]" key={`${index}-${specification.label}`}>
-              <input defaultValue={specification.label} name="specLabel" placeholder="Material" />
-              <input defaultValue={specification.value} name="specValue" placeholder="Rubber" />
-              <button
-                aria-label="Remove specification"
-                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-sm)] border border-black/10 px-3 text-red-600"
-                onClick={() =>
-                  setSpecifications((current) =>
-                    current.filter((_, currentIndex) => currentIndex !== index),
-                  )
-                }
-                type="button"
-              >
-                <Trash2 aria-hidden="true" size={16} />
-              </button>
+          {!existingImages.length && !newImagePreviews.length ? (
+            <div className="grid min-h-44 place-items-center rounded-lg border border-dashed border-black/15 bg-neutral-50 p-5 text-center text-sm font-semibold text-neutral-500">
+              <div>
+                <Plus aria-hidden="true" className="mx-auto mb-3 text-red-600" size={22} />
+                Add at least one product image.
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-        <h2 className="font-display text-2xl font-bold text-neutral-950">Publishing and SEO</h2>
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Badge
-            <input defaultValue={values.badge} name="badge" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            Sort order
-            <input defaultValue={values.sortOrder} name="sortOrder" type="number" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700 lg:col-span-2">
-            Tags
-            <input defaultValue={values.tags.join(", ")} name="tags" placeholder="rubber, gym, wholesale" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            SEO title
-            <input defaultValue={values.seoTitle} name="seoTitle" />
-          </label>
-          <label className="grid gap-2 text-sm font-bold text-neutral-700">
-            SEO description
-            <input defaultValue={values.seoDescription} maxLength={180} name="seoDescription" />
-          </label>
+          ) : null}
         </div>
       </section>
 

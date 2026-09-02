@@ -23,9 +23,8 @@ export default async function AdminDashboardPage() {
 
   try {
     stats = await getProductStats();
-  } catch (caught) {
-    error =
-      caught instanceof Error ? caught.message : "Unable to load product statistics.";
+  } catch {
+    error = "Unable to load product statistics right now.";
   }
 
   return (

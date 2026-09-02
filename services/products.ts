@@ -59,6 +59,7 @@ type ProductSummaryDocumentWithId = Pick<
   | "name"
   | "slug"
   | "shortDescription"
+  | "description"
   | "brandDivision"
   | "category"
   | "regularPrice"
@@ -67,6 +68,7 @@ type ProductSummaryDocumentWithId = Pick<
   | "stockQuantity"
   | "stockStatus"
   | "thumbnail"
+  | "images"
   | "badge"
   | "sortOrder"
   | "createdAt"
@@ -77,6 +79,7 @@ const productSummaryProjection = {
   name: 1,
   slug: 1,
   shortDescription: 1,
+  description: 1,
   brandDivision: 1,
   category: 1,
   regularPrice: 1,
@@ -85,6 +88,7 @@ const productSummaryProjection = {
   stockQuantity: 1,
   stockStatus: 1,
   thumbnail: 1,
+  images: 1,
   badge: 1,
   sortOrder: 1,
   createdAt: 1,
@@ -127,6 +131,7 @@ function serializeProductSummary(product: ProductSummaryDocumentWithId): Product
     name: product.name,
     slug: product.slug,
     shortDescription: product.shortDescription,
+    description: product.description,
     brandDivision: product.brandDivision,
     category: product.category,
     regularPrice: product.regularPrice,
@@ -135,6 +140,7 @@ function serializeProductSummary(product: ProductSummaryDocumentWithId): Product
     stockQuantity: product.stockQuantity,
     stockStatus: product.stockStatus,
     thumbnail: product.thumbnail,
+    images: product.images,
     badge: product.badge,
   };
 }

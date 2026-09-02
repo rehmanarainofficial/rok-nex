@@ -42,6 +42,14 @@ function readNumber(formData: FormData, key: string) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function getSafeProductFormError(error: unknown, fallback: string) {
   if (!(error instanceof Error)) {
     return fallback;
@@ -50,7 +58,8 @@ function getSafeProductFormError(error: unknown, fallback: string) {
   if (
     error.message.includes("supported image type") ||
     error.message.includes("larger than 5 MB") ||
-    error.message.includes("valid image file")
+    error.message.includes("valid image file") ||
+    error.message.includes("Cloudinary image upload")
   ) {
     return error.message;
   }
@@ -117,11 +126,13 @@ async function parseProductForm(formData: FormData) {
 
   return {
     name: readText(formData, "name"),
-    slug: readText(formData, "slug"),
-    shortDescription: readText(formData, "shortDescription"),
+    slug: readText(formData, "slug") || slugify(readText(formData, "name")),
+    shortDescription:
+      readText(formData, "shortDescription") ||
+      readText(formData, "description").slice(0, 180),
     description: readText(formData, "description"),
-    brandDivision: readText(formData, "brandDivision"),
-    category: readText(formData, "category"),
+    brandDivision: readText(formData, "brandDivision") || "rox-fitness",
+    category: readText(formData, "category") || "Products",
     subcategory: readOptionalText(formData, "subcategory"),
     sku: readOptionalText(formData, "sku"),
     regularPrice: readNumber(formData, "regularPrice"),

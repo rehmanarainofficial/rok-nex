@@ -4,9 +4,10 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { SearchResultCard } from "@/components/search/search-result-card";
+import { ProductGrid } from "@/components/product/product-grid";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
+import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getPublicCategories } from "@/services/public-navigation";
 import { getProductSummaries } from "@/services/products";
@@ -32,8 +33,8 @@ export async function generateMetadata({
   const query = getParam(params, "q").trim();
   const title = query ? `Search Products: ${query}` : "Search Products";
   const description = query
-    ? `Search Rox & Nex wholesale catalog results for ${query}.`
-    : "Search Rox & Nex wholesale fitness, sports, and games products.";
+    ? `Search Rox & Nex catalog results for ${query}.`
+    : "Search Rox & Nex fitness, sports, and games products.";
   const canonical = query ? `/search?q=${encodeURIComponent(query)}` : "/search";
 
   return {
@@ -78,13 +79,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <section className="relative border-b border-[var(--color-border)] py-[var(--section-spacing)]">
           <Container className="grid gap-8 lg:grid-cols-[0.82fr_1fr] lg:items-end">
             <ScrollReveal>
               <SectionHeading
-                description="Search by product name, SKU, category, or tags. Results stay focused on active wholesale catalog items."
+                description="Search by product name, SKU, category, or tags. Results stay focused on active catalog items."
                 eyebrow="Global Search"
                 title="Find catalog products fast."
               />
@@ -134,46 +135,35 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
 
             {query.length > 0 && query.length < 2 ? (
-              <Card className="p-8 text-center">
-                <p className="font-display text-3xl font-bold text-[var(--color-text)]">
-                  Type at least 2 characters.
-                </p>
-                <p className="mt-3 text-[var(--color-muted)]">
-                  Shorter searches are held back to keep the catalog fast.
-                </p>
-              </Card>
+              <EmptyState
+                description="Shorter searches are held back to keep the catalog fast for browsing."
+                eyebrow="Search"
+                title="Type at least 2 characters."
+              />
             ) : null}
 
             {isUnavailable ? (
-              <Card className="p-8 text-center">
-                <p className="font-display text-3xl font-bold text-[var(--color-text)]">
-                  Search is temporarily unavailable.
-                </p>
-                <p className="mt-3 text-[var(--color-muted)]">
-                  The product database is not reachable right now.
-                </p>
-              </Card>
+              <EmptyState
+                description="The catalog search service could not be reached. Try again shortly."
+                eyebrow="Search"
+                title="Search is temporarily unavailable."
+              />
             ) : null}
 
             {!isUnavailable && query.length >= 2 && products.length === 0 ? (
-              <Card className="p-8 text-center">
-                <p className="font-display text-3xl font-bold text-[var(--color-text)]">
-                  No products found.
-                </p>
-                <p className="mt-3 text-[var(--color-muted)]">
-                  Try another product name, SKU, category, or tag.
-                </p>
-              </Card>
+              <EmptyState
+                description="Try another product name, SKU, category, or tag."
+                eyebrow="Search results"
+                title="No products found."
+              />
             ) : null}
 
             {products.length > 0 ? (
-              <div className="grid gap-4">
-                {products.map((product, index) => (
-                  <ScrollReveal delay={Math.min(index * 55, 220)} key={product.slug}>
-                    <SearchResultCard product={product} />
-                  </ScrollReveal>
-                ))}
-              </div>
+              <ProductGrid
+                emptyDescription="Try another product name, SKU, category, or tag."
+                emptyTitle="No products found."
+                products={products}
+              />
             ) : null}
           </Container>
         </section>

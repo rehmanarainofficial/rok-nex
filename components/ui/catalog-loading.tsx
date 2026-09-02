@@ -1,13 +1,22 @@
 import { Container } from "@/components/ui/container";
 
+function SkeletonBlock({ className }: { className: string }) {
+  return <div className={`skeleton-surface ${className}`} />;
+}
+
 export function CatalogLoading() {
   return (
     <main className="min-h-screen">
-      <section className="border-b border-[var(--color-border)] py-[var(--section-spacing)]">
-        <Container className="grid gap-8">
-          <div className="h-4 w-44 rounded-[var(--radius-pill)] bg-[var(--color-surface-raised)]" />
-          <div className="h-20 max-w-3xl rounded-[var(--radius-sm)] bg-[var(--color-surface-raised)]" />
-          <div className="h-6 max-w-2xl rounded-[var(--radius-sm)] bg-[var(--color-surface-raised)]" />
+      <section className="relative overflow-hidden border-b border-[var(--color-border)] py-[var(--section-spacing)]">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_18%,var(--color-red-glow),transparent_30%)]" />
+        <Container className="grid gap-7">
+          <SkeletonBlock className="h-4 w-44 rounded-[var(--radius-pill)]" />
+          <SkeletonBlock className="h-24 max-w-3xl rounded-[var(--radius-sm)]" />
+          <SkeletonBlock className="h-6 max-w-2xl rounded-[var(--radius-sm)]" />
+          <div className="flex flex-wrap gap-3 pt-3">
+            <SkeletonBlock className="h-11 w-36 rounded-[var(--radius-pill)]" />
+            <SkeletonBlock className="h-11 w-44 rounded-[var(--radius-pill)]" />
+          </div>
         </Container>
       </section>
       <section className="py-[var(--section-spacing)]">
@@ -17,12 +26,12 @@ export function CatalogLoading() {
               className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)]"
               key={index}
             >
-              <div className="aspect-[1.12/1] bg-[var(--color-surface-raised)]" />
+              <SkeletonBlock className="aspect-[1.12/1]" />
               <div className="grid gap-3 p-5">
-                <div className="h-3 w-24 rounded-[var(--radius-pill)] bg-[var(--color-surface-raised)]" />
-                <div className="h-7 rounded-[var(--radius-sm)] bg-[var(--color-surface-raised)]" />
-                <div className="h-4 rounded-[var(--radius-sm)] bg-[var(--color-surface-raised)]" />
-                <div className="h-4 w-2/3 rounded-[var(--radius-sm)] bg-[var(--color-surface-raised)]" />
+                <SkeletonBlock className="h-3 w-24 rounded-[var(--radius-pill)]" />
+                <SkeletonBlock className="h-7 rounded-[var(--radius-sm)]" />
+                <SkeletonBlock className="h-4 rounded-[var(--radius-sm)]" />
+                <SkeletonBlock className="h-4 w-2/3 rounded-[var(--radius-sm)]" />
               </div>
             </div>
           ))}

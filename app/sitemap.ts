@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 
 import { getSitemapCategories } from "@/services/categories";
-import { getSitemapProducts } from "@/services/products";
 import { absoluteUrl } from "@/utilities/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -15,10 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const [products, categories] = await Promise.all([
-      getSitemapProducts(),
-      getSitemapCategories(),
-    ]);
+    const categories = await getSitemapCategories();
 
     return [
       ...staticRoutes,
@@ -26,11 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: absoluteUrl(`/categories/${category.slug}`),
         lastModified: category.updatedAt,
         priority: 0.75,
-      })),
-      ...products.map((product) => ({
-        url: absoluteUrl(`/products/${product.slug}`),
-        lastModified: product.updatedAt,
-        priority: 0.8,
       })),
     ];
   } catch {

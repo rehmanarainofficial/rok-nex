@@ -32,8 +32,8 @@ export default async function AdminCategoriesPage({ searchParams }: CategoriesPa
 
   try {
     categories = await getCategories();
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load categories.";
+  } catch {
+    error = "Unable to load categories right now.";
   }
 
   return (
@@ -57,14 +57,12 @@ export default async function AdminCategoriesPage({ searchParams }: CategoriesPa
         </AdminCard>
         <AdminCard className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-left text-sm">
+            <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="border-b border-black/10 bg-neutral-50 text-xs uppercase tracking-[0.14em] text-neutral-500">
                 <tr>
                   <th className="px-4 py-3">Image</th>
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Division</th>
-                  <th className="px-4 py-3">Slug</th>
-                  <th className="px-4 py-3">Sort</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -85,8 +83,6 @@ export default async function AdminCategoriesPage({ searchParams }: CategoriesPa
                       </td>
                       <td className="px-4 py-3 font-bold text-neutral-950">{category.name}</td>
                       <td className="px-4 py-3">{formatDivision(category.brandDivision)}</td>
-                      <td className="px-4 py-3 text-neutral-500">{category.slug}</td>
-                      <td className="px-4 py-3">{category.sortOrder}</td>
                       <td className="px-4 py-3">
                         <form action={toggleCategoryActiveAction}>
                           <input name="id" type="hidden" value={category.id} />
@@ -124,7 +120,7 @@ export default async function AdminCategoriesPage({ searchParams }: CategoriesPa
                   ))
                 ) : (
                   <tr>
-                    <td className="px-4 py-10 text-center text-neutral-500" colSpan={7}>
+                    <td className="px-4 py-10 text-center text-neutral-500" colSpan={5}>
                       No categories found.
                     </td>
                   </tr>

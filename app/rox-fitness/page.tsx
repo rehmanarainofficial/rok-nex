@@ -16,21 +16,21 @@ import {
 export const metadata: Metadata = {
   title: "Rox Fitness",
   description:
-    "Browse Rox Fitness wholesale products for strength, movement, performance, and everyday training.",
+    "Browse Rox Fitness products for strength, movement, performance, and everyday training.",
   alternates: {
     canonical: "/rox-fitness",
   },
   openGraph: {
     title: "Rox Fitness",
     description:
-      "Wholesale fitness products for strength, movement, performance, and everyday training.",
+      "Fitness products for strength, movement, performance, and everyday training.",
     url: "/rox-fitness",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Rox Fitness",
-    description: "Browse Rox Fitness wholesale strength and training products.",
+    description: "Browse Rox Fitness strength and training products.",
   },
 };
 
@@ -68,18 +68,18 @@ export default async function RoxFitnessPage({ searchParams }: RoxFitnessPagePro
       }),
       getCategories({ active: true }),
     ]);
-  } catch (caught) {
-    error = caught instanceof Error ? caught.message : "Unable to load Rox Fitness catalog.";
+  } catch {
+    error = "The Rox Fitness catalog is temporarily unavailable. Please try again shortly.";
   }
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader categories={categories} />
+      <SiteHeader />
       <main className="flex-1 overflow-hidden">
         <DivisionHero
           description="Equipment built for strength, movement, performance, and everyday training."
           division="rox-fitness"
-          eyebrow="Performance wholesale division"
+          eyebrow="Performance division"
           title="ROX FITNESS"
           tone="rox"
         />
@@ -100,7 +100,7 @@ export default async function RoxFitnessPage({ searchParams }: RoxFitnessPagePro
             featuredProducts={content.featuredProducts}
             heading={{
               description:
-                "Highlighted fitness products selected for wholesale buyers reviewing performance-led ranges.",
+                "Highlighted fitness products selected for customers reviewing performance-led ranges.",
               eyebrow: "Featured Fitness Products",
               title: "Strength-focused products with live availability.",
             }}
@@ -111,7 +111,7 @@ export default async function RoxFitnessPage({ searchParams }: RoxFitnessPagePro
               ctaLabel: "Explore Rox Products",
               description:
                 "Use Rox Fitness for strength assortments, gym essentials, training accessories, and fast-moving fitness products.",
-              title: "Build a sharper fitness wholesale range.",
+              title: "Build a sharper fitness product range.",
             }}
             showSort
             total={content.total}
